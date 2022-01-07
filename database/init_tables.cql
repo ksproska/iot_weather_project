@@ -1,3 +1,5 @@
+/* init for all databases */
+
 CREATE TABLE records (
 record_time timestamp,
 room_name text,
