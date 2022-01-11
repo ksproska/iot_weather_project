@@ -87,84 +87,25 @@ class Connection:
                                                    f'ALLOW FILTERING')
 
     def get_all_scheduled_preferences_temperature(self, room_name: str):
-        return self.__get_all_scheduled_preferences(Preferences_temperature, room_name)
+        return self.__get_all_scheduled_preferences(Preference_temperature, room_name)
 
     def get_all_scheduled_preferences_humidity(self, room_name: str):
-        return self.__get_all_scheduled_preferences(Preferences_humidity, room_name)
+        return self.__get_all_scheduled_preferences(Preference_humidity, room_name)
 
     @property
     def all_preferences_temperature(self):
-        return self.__get_all_objects(Preferences_temperature)
+        return self.__get_all_objects(Preference_temperature)
 
     @property
     def all_preferences_humidity(self):
-        return self.__get_all_objects(Preferences_humidity)
+        return self.__get_all_objects(Preference_humidity)
 
     @property
     def all_records(self):
-        return self.__get_all_objects(Records)
+        return self.__get_all_objects(Record)
 
     def current_preference_temperature(self, room_name: str) -> float:
-        return self.__get_current_preference(Preferences_temperature, room_name).value
+        return self.__get_current_preference(Preference_temperature, room_name).value
 
     def current_preference_humidity(self, room_name: str):
-        return self.__get_current_preference(Preferences_humidity, room_name).value
-
-
-class DBTest(unittest.TestCase):
-    ROOM_NAMES = ['kitchen', 'living room', 'bedroom']
-
-    def setUp(self) -> None:
-        self.connection = Connection()
-
-    def test_init(self):
-        self.connection.drop_tables()
-        self.connection.init_tables()
-
-    def test_add_and_display_records(self):
-        for room_name in self.ROOM_NAMES:
-            self.connection.add_object(Records.with_current_time(room_name, 19.3, 35.2, 1000, True, False))
-        [print(x) for x in self.connection.all_records]
-
-    def test_adding_preference_temperature_temp(self):
-        pref = Preferences_temperature.as_temporary(21.3, 'kitchen')
-        print(f'ADDED: {self.connection.add_object(pref)}')
-
-    def test_example_setup(self):
-        self.connection.drop_tables()
-        self.connection.init_tables()
-        for room_name in self.ROOM_NAMES:
-            self.connection.add_object(Preferences_temperature.as_default(21.3, room_name))
-            self.connection.add_object(Preferences_temperature.as_schedule(11.0, room_name,
-                                                                           get_time(0), get_time(11, 30)))
-            self.connection.add_object(Preferences_temperature.as_schedule(15.0, room_name,
-                                                                           get_time(15), get_time(18, 30)))
-            self.connection.add_object(Preferences_temperature.as_temporary(21.3, room_name))
-
-            self.connection.add_object(Preferences_humidity.as_default(45, room_name))
-            self.connection.add_object(Preferences_humidity.as_schedule(40.0, room_name,
-                                                                        get_time(15), get_time(18, 30)))
-            self.connection.add_object(Preferences_humidity.as_temporary(44, room_name))
-
-        print_heading('PREFERENCES TEMPERATURE')
-        [print(x) for x in self.connection.all_preferences_temperature]
-        print_heading('PREFERENCES HUMIDITY')
-        [print(x) for x in self.connection.all_preferences_humidity]
-
-        for room_name in self.ROOM_NAMES:
-            print_heading(f'CURRENT DEFAULTS FOR {room_name}: ')
-            print(f'temperature: {self.connection.current_preference_temperature(room_name)}')
-            print(f'humidity:    {self.connection.current_preference_humidity(room_name)}')
-
-    def test_display_all_scheduled_preferences_temperature(self):
-        print_heading('PREFERENCES TEMPERATURE for kitchen')
-        preferences_tem = self.connection.get_all_scheduled_preferences_temperature('kitchen')
-        [print(x) for x in preferences_tem]
-        print_heading('PREFERENCES HUMIDITY for kitchen')
-        preferences_tem = self.connection.get_all_scheduled_preferences_humidity('kitchen')
-        [print(x) for x in preferences_tem]
-
-    def test_display_current_preference_temperature(self):
-        print_heading(f'CURRENT DEFAULTS FOR kitchen: ')
-        print(f'temperature: {self.connection.current_preference_temperature("kitchen")}')
-        print(f'humidity:    {self.connection.current_preference_humidity("kitchen")}')
+        return self.__get_current_preference(Preference_humidity, room_name).value

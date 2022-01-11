@@ -30,7 +30,7 @@ class AddableToDatabase:
         return inspect.getfullargspec(cls).args[1:]
 
 
-class Records(AddableToDatabase):
+class Record(AddableToDatabase):
     def __init__(self, record_time: datetime, room_name: str, record_temp: float, record_humidity: float,
                  record_press: int, device_termost: bool, device_dryer: bool):
         self.record_time: datetime = record_time
@@ -53,7 +53,7 @@ def get_time(hour: int, minutes: int = 0, sec: int = 0) -> time:
                               '%H::%M::%S').time()
 
 
-class Preferences(AddableToDatabase):
+class Preference(AddableToDatabase):
     WEIGHT_DEFAULT = 0
     WEIGHT_SCHEDULE = 1
     WEIGHT_TEMPORARY = 2
@@ -91,9 +91,9 @@ class Preferences(AddableToDatabase):
         return command
 
 
-class Preferences_temperature(Preferences):
+class Preference_temperature(Preference):
     pass
 
 
-class Preferences_humidity(Preferences):
+class Preference_humidity(Preference):
     pass

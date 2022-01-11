@@ -1,4 +1,4 @@
-CREATE TABLE records (
+CREATE TABLE record (
     record_time timestamp,
     room_name text,
     record_temp double,
@@ -13,7 +13,7 @@ CREATE TABLE records (
 WITH CLUSTERING ORDER BY (record_time DESC);
 
 
-CREATE TABLE preferences_temperature (
+CREATE TABLE preference_temperature (
     preference_timestamp timestamp,
     time_start time,
     time_end time,
@@ -25,7 +25,7 @@ CREATE TABLE preferences_temperature (
 WITH CLUSTERING ORDER BY (weight DESC, preference_timestamp DESC);
 
 
-CREATE TABLE preferences_humidity (
+CREATE TABLE preference_humidity (
     preference_timestamp timestamp,
     time_start time,
     time_end time,
@@ -33,4 +33,5 @@ CREATE TABLE preferences_humidity (
     weight int,
     room_name text,
     PRIMARY KEY (room_name, weight, preference_timestamp)
-);
+)
+WITH CLUSTERING ORDER BY (weight DESC, preference_timestamp DESC);
