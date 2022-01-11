@@ -17,7 +17,7 @@ def run_receiver():
     receiver_api.subscribe()
 
 
-rec_thread = threading.Thread(target=run_receiver, )
+rec_thread = threading.Thread(target=run_receiver)
 rec_thread.start()
 
 app = Flask(__name__)
