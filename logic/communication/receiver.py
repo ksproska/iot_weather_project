@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 
 
-class Sender:
+class Receiver:
     def __init__(self, broker, identifier):
         self.broker = broker
         self.identifier = identifier
@@ -13,9 +13,10 @@ class Sender:
     def disconnect_from_broker(self):
         self.client.disconnect(self.broker)
 
-    def publish(self, message):
-        self.client.publish(self.identifier, message)
+    def subscribe(self):
+        self.client.subscribe(self.identifier)
 
     def loop_start(self):
         self.client.loop_start()
+
 
