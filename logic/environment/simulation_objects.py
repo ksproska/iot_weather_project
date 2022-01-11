@@ -4,6 +4,7 @@ import matplotlib.pyplot as pyl
 import numpy as np
 import random
 
+
 # Funkcja napisana tak by przyspieszyć wyniki symulacji (1 h = 2.5 min w rzeczywistości)
 def get_time():
     now = datetime.datetime.now()
@@ -48,22 +49,20 @@ class Thermometer:
     def __init__(self, params: TemperatureParams):
         self.parameters = params
 
-    def plot(self):
-        x = np.arange(0, 24, 0.1)
-        y = np.array([self.parameters.current_temperature(elem) for elem in x])
-        pyl.plot(x, y)
-        pyl.show()
+    def current_temperature(self, time):
+        return self.parameters.current_temperature(time)
 
 
 class HumiditySensor:
     def __init__(self, params: HumidityParams):
         self.parameters = params
 
-    def plot(self):
-        x = np.arange(0, 24, 0.1)
-        y = np.array([self.current_humidity(elem) for elem in x])
-        pyl.plot(x, y)
-        pyl.show()
+    def current_humidity(self, time):
+        return self.parameters.current_humidity(time)
+
+
+
+
 
 
 
