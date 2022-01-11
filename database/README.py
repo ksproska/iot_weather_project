@@ -7,7 +7,11 @@ class DBTest(unittest.TestCase):
     ROOM_NAMES = ['kitchen', 'living room', 'bedroom']
 
     def setUp(self) -> None:
+        print_heading(f'ESTABLISHING CONNECTION')
+        start_time = datetime.now()
         self.connection = Connection()
+        end_time = datetime.now()
+        print(f'TIME: {(end_time - start_time).seconds} seconds')
 
     def test_example_setup(self):
         self.connection.drop_tables()
@@ -16,14 +20,14 @@ class DBTest(unittest.TestCase):
         for room_name in self.ROOM_NAMES:
             self.connection.add_object(Preference_temperature.as_default(21, room_name))
             self.connection.add_object(Preference_temperature.as_schedule(11.0, room_name,
-                                                                           get_time(0), get_time(11, 30)))
+                                                                          get_time(0), get_time(11, 30)))
             self.connection.add_object(Preference_temperature.as_schedule(15.0, room_name,
-                                                                           get_time(15), get_time(18, 30)))
+                                                                          get_time(15), get_time(18, 30)))
             self.connection.add_object(Preference_temperature.as_temporary(21.3, room_name))
 
             self.connection.add_object(Preference_humidity.as_default(45, room_name))
             self.connection.add_object(Preference_humidity.as_schedule(40.0, room_name,
-                                                                        get_time(15), get_time(18, 30)))
+                                                                       get_time(15), get_time(18, 30)))
             self.connection.add_object(Preference_humidity.as_temporary(44, room_name))
 
         for i in range(5):
