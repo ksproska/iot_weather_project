@@ -121,13 +121,11 @@ class DBTest(unittest.TestCase):
         self.connection.drop_tables()
         self.connection.init_tables()
 
-    # examples with records ______________________________________________________________________________
     def test_add_and_display_records(self):
         for room_name in self.ROOM_NAMES:
             self.connection.add_object(Records.with_current_time(room_name, 19.3, 35.2, 1000, True, False))
         [print(x) for x in self.connection.all_records]
 
-    # examples with preferences for temperature _________________________________________________________
     def test_adding_preference_temperature_temp(self):
         pref = Preferences_temperature.as_temporary(21.3, 'kitchen')
         print(f'ADDED: {self.connection.add_object(pref)}')
