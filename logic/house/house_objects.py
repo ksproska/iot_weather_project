@@ -6,6 +6,7 @@ from logic.environment.simulation_objects import get_time
 import random
 import datetime
 
+
 class Room:
     def __init__(self, idx: int, thermometer: Thermometer, humidity_sensor: HumiditySensor,
                  receiver: Receiver, sender: Sender, name="", temperature_delta=0.2, humidity_delta=0.05):
@@ -49,7 +50,13 @@ class Room:
         humidity_change = 0
 
         if self.is_dryer_on:
-            humidity
+            humidity_change -= (self.humidity_delta * random.random())
+        elif self.current_humidity < humidity:
+            humidity_change += (self.humidity_delta * random.random())
+        else:
+            humidity -= (self.humidity_delta * random.random())
+
+        self.current_humidity += min(max(humidity_change, 0), 1)
 
 
 
