@@ -1,4 +1,3 @@
 drop table records;
-drop table preferences;
-drop table preferences_temp;
-drop table preferences_hum;
+drop table preferences_temperature;
+drop table preferences_humidity;
