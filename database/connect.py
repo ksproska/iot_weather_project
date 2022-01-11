@@ -1,5 +1,3 @@
-import unittest
-
 import cassandra
 # pip install cassandra-driver
 from cassandra.cluster import Cluster, ResponseFuture, ResultSet
@@ -85,6 +83,10 @@ class Connection:
         return self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
                                                    f'AND weight = {class_type.WEIGHT_SCHEDULE} '
                                                    f'ALLOW FILTERING')
+
+    def get_all_records(self, room_name: str):
+        return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' '
+                                                  f'ALLOW FILTERING')
 
     def get_all_scheduled_preferences_temperature(self, room_name: str):
         return self.__get_all_scheduled_preferences(Preference_temperature, room_name)

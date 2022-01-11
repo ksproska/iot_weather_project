@@ -57,7 +57,7 @@ class Preference(AddableToDatabase):
     WEIGHT_DEFAULT = 0
     WEIGHT_SCHEDULE = 1
     WEIGHT_TEMPORARY = 2
-    TTL = timedelta(minutes=5)
+    TTL = timedelta(minutes=1)
 
     def __init__(self, preference_timestamp: datetime, room_name: str, time_start: time, time_end: time, value: float, weight: int):
         self.weight: int = weight
@@ -79,7 +79,8 @@ class Preference(AddableToDatabase):
 
     @classmethod
     def as_temporary(cls, value, room_name):
-        time_start = (datetime.now() - timedelta(minutes=1)).time()
+        safety_delta = timedelta(minutes=1)
+        time_start = (datetime.now() - safety_delta).time()
         time_end = (datetime.now() + cls.TTL).time()
         return cls(datetime.now(), room_name, time_start, time_end, value, cls.WEIGHT_TEMPORARY)
 
