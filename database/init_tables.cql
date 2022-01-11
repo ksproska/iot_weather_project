@@ -1,32 +1,37 @@
-CREATE TABLE records (
-record_time timestamp,
-room_name text,
-record_temp double,
-record_humidity double,
-record_press int,
+CREATE TABLE record (
+    record_time timestamp,
+    room_name text,
+    record_temp double,
+    record_humidity double,
+    record_press int,
 
-device_termost boolean,
-device_dryer boolean,
+    device_termost boolean,
+    device_dryer boolean,
 
-PRIMARY KEY (record_time)
-);
+    PRIMARY KEY (room_name, record_time)
+)
+WITH CLUSTERING ORDER BY (record_time DESC);
 
-CREATE TABLE preferences (
-default_temp double,
-default_hum double,
-PRIMARY KEY ((default_temp, default_hum))
-);
 
-CREATE TABLE preferences_temp (
-time_start time,
-time_end time,
-temp double,
-PRIMARY KEY (time_start, time_end)
-);
+CREATE TABLE preference_temperature (
+    preference_timestamp timestamp,
+    time_start time,
+    time_end time,
+    value double,
+    weight int,
+    room_name text,
+    PRIMARY KEY (room_name, weight, preference_timestamp)
+)
+WITH CLUSTERING ORDER BY (weight DESC, preference_timestamp DESC);
 
-CREATE TABLE preferences_hum (
-time_start time,
-time_end time,
-hum double,
-PRIMARY KEY (time_start, time_end)
-);
+
+CREATE TABLE preference_humidity (
+    preference_timestamp timestamp,
+    time_start time,
+    time_end time,
+    value double,
+    weight int,
+    room_name text,
+    PRIMARY KEY (room_name, weight, preference_timestamp)
+)
+WITH CLUSTERING ORDER BY (weight DESC, preference_timestamp DESC);
