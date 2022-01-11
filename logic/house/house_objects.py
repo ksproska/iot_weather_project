@@ -6,6 +6,7 @@ from threading import Thread
 from logic.environment.simulation_objects import get_time
 import random
 import datetime
+from time import sleep
 
 
 class Room:
@@ -60,21 +61,36 @@ class Room:
         self.current_humidity += min(max(humidity_change, 0), 1)
 
     def update_devices(self, message):
-        pass
+        print('devices updated')
 
     def listen(self):
         self.receiver.connect_to_broker()
         self.receiver.loop_start()
         self.receiver.client.on_message = lambda client, userdata, message: self.update_devices(message)
+        self.receiver.subscribe()
         while True:
             pass
+
+    def send(self):
+        self.sender.connect_to_broker()
+        self.sender.loop_start()
+        while True:
+            sleep(2)
+            self.sender.publish("Hello server!")
 
 
 if __name__ == '__main__':
     tempParams = TemperatureParams(10, 17, 0.3)
     humParams = HumidityParams(0, 0.78, 0.01, tempParams)
+    thermometer = Thermometer(tempParams)
+    humSensor = HumiditySensor(humParams)
     sender = Sender('localhost', ROOM_DATA)
     receiver = Receiver('localhost', DIRECTIVES)
+    room = Room(1, thermometer, humSensor, receiver, sender, 'salon', temperature_delta=0.07, humidity_delta=0.02)
+    Thread(target=lambda: room.listen()).start()
+    Thread(target=lambda: room.send()).start()
+    while True:
+        pass
 
 
 
