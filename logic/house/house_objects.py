@@ -61,7 +61,7 @@ class Room:
         self.current_humidity += min(max(humidity_change, 0), 1)
 
     def update_devices(self, message):
-        print('devices updated')
+        print('devices updated ' + message.payload.decode('utf-8'))
 
     def listen(self):
         self.receiver.connect_to_broker()
@@ -73,10 +73,12 @@ class Room:
 
     def send(self):
         self.sender.connect_to_broker()
-        self.sender.loop_start()
         while True:
             sleep(2)
-            self.sender.publish("Hello server!")
+            time = get_time()
+            temp = self.thermometer.current_temperature(time)
+            hum = self.humidity_sensor.current_humidity(time)
+            self.sender.publish(f"Temp = {temp}\nHum = {hum}")
 
 
 if __name__ == '__main__':
@@ -84,8 +86,8 @@ if __name__ == '__main__':
     humParams = HumidityParams(0, 0.78, 0.01, tempParams)
     thermometer = Thermometer(tempParams)
     humSensor = HumiditySensor(humParams)
-    sender = Sender('localhost', ROOM_DATA)
-    receiver = Receiver('localhost', DIRECTIVES)
+    sender = Sender('localhost', ROOM_DATA) # ip do zmiany
+    receiver = Receiver('localhost', DIRECTIVES) # ip do zmiany
     room = Room(1, thermometer, humSensor, receiver, sender, 'salon', temperature_delta=0.07, humidity_delta=0.02)
     Thread(target=lambda: room.listen()).start()
     Thread(target=lambda: room.send()).start()
