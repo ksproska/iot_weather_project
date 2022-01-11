@@ -1,14 +1,16 @@
+import sys
+sys.path.append('/home/pi/Desktop/proj/iot_weather_project')
 from flask import Flask
-from communication import receiver, sender, constants
+from routes import routes, sender_api, receiver_api
 import threading
 
 
-broker = "localhost"
+sender_api.connect_to_broker()
 
-receiver_api = receiver.Receiver(broker, constants.ROOM_DATA)
-sender_api = sender.Sender(broker, constants.DIRECTIVES)
 def process_message(client, userdata, message):
-    print(client + " send message " + message)
+    # 1. split message to get required information about room, temp and humidity
+    # 2. save records to database
+    pass
 
 def run_receiver():
     receiver_api.connect_to_broker()
@@ -17,9 +19,9 @@ def run_receiver():
     receiver_api.subscribe()
 
 
-rec_thread = threading.Thread(target=run_receiver, )
+rec_thread = threading.Thread(target=run_receiver)
 rec_thread.start()
 
 app = Flask(__name__)
-
+app.register_blueprint(routes)
 
