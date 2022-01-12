@@ -9,17 +9,21 @@ broker = "localhost"
 
 receiver_api = receiver.Receiver(broker, constants.ROOM_DATA)
 sender_api = sender.Sender(broker, constants.DIRECTIVES)
-json_file = open("rooms.json")
-rooms = json.load(json_file)
+json_file = open("config.json")
+config = json.load(json_file)
 
 json_file.close()
 
-list_of_rooms = rooms['rooms']
+list_of_rooms = config['rooms']
 db_connection = Connection()
 
 @routes.route("/")
 def index():
     return current_app.send_static_file("index.html")
+
+@routes.route("/roomnames")
+def get_room_data():
+    return config
 
 @routes.route(r"/<room_identifier>/data")
 def get_data_for_room(room_identifier):
