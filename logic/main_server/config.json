@@ -1,0 +1,16 @@
+{
+    "rooms": [
+      {
+        "room_identifier": "living_room",
+        "display_name" : "Living room"
+      },
+      {
+        "room_identifier": "bathroom",
+        "display_name" : "Bathroom"
+      },
+      {
+        "room_identifier": "kitchen",
+        "display_name" : "Kitchen"
+      }
+    ]
+}
