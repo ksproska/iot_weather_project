@@ -11,10 +11,7 @@ import HomeIcon from '@mui/icons-material/Home';
 
 import styles from "../../styles/Header/header.module.css";
 
-// TODO: fetch'ować listę pomieszczeń [ 'id-room-1': {'name': 'Kitchen'}, 'id-room-2': {'name': 'Bathroom'}...]
-function Header() {
-
-    // living_room
+function Header({ rooms }) {
 
     return (
         <Grid item xs={12}>
@@ -26,21 +23,15 @@ function Header() {
                                 <HomeIcon className={styles.header_home_icon} />
                             </Button>
                         </Link>
-                        <Button variant="outlined" className={styles.header_button}>
-                            <Typography className={styles.header_button_text}>
-                                Living Room
-                            </Typography>
-                        </Button>
-                        <Button variant="outlined" className={styles.header_button}>
-                            <Typography className={styles.header_button_text}>
-                                Kitchen
-                            </Typography>
-                        </Button>
-                        <Button variant="outlined" className={styles.header_button}>
-                            <Typography className={styles.header_button_text}>
-                                Bathroom
-                            </Typography>
-                        </Button>
+                        {rooms['rooms'].map((room) =>
+                            <Link to={"/room/" + room['room_identifier']} key={room['room_identifier']}>
+                                <Button variant="outlined" className={styles.header_button}>
+                                    <Typography className={styles.header_button_text}>
+                                        {room['display_name']}
+                                    </Typography>
+                                </Button>
+                            </Link>
+                        )}
                     </Box>
                 </Toolbar>
             </AppBar>

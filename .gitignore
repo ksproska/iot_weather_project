@@ -1,0 +1,4 @@
+logic/main_server/venv/
+logic/main_server/__pycache__/
+logic/__pycache__
+__pycache__/
