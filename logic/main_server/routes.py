@@ -62,8 +62,30 @@ def get_room_aims(room_identifier):
     
     return jsonify(dict_to_json)
 
-    
-    
+@routes.route(r"/<room_identifier>/set_def_hum")
+def set_default_humidity(room_identifier):
+    pass
+
+@routes.route(r"/<room_identifier>/set_def_temp")
+def set_default_temperature(room_identifier):
+    pass
+
+@routes.route(r"/<room_identifier>/delete_temp_schedule")
+def delete_temp_schedule(room_identifier):
+    pass
+
+@routes.route(r"/<room_identifier>/delete_hum_schedule")
+def delete_hum_schedule(room_identifier):
+    pass
+
+@routes.route(r"/<room_identifier>/add_temp_schedule")
+def add_temp_schedule(room_identifier):
+    pass
+
+@routes.route(r"/<room_identifier>/add_hum_schedule")
+def add_hum_schedule(room_identifier):
+    pass
+
 @routes.route("/bathroom/aims")
 def get_bth_aims():
     def_tmp_and_hum = []
@@ -84,3 +106,4 @@ def get_current_bth_state():
     latest_rec = []
     dict_to_json = {"temperature": 23.18, "humidity": 56.76, "pressure":1100, "thermostat_state":True, "dryer_state":False}
     return jsonify(dict_to_json)
+
