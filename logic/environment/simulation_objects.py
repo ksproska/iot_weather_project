@@ -45,6 +45,29 @@ class HumidityParams:
         return min(max(0, read), 1)
 
 
+class PressureParams:
+    def __init__(self, min_pres, max_pres, pres_fluctuation):
+        self.min_pressure = min_pres
+        self.max_pressure = max_pres
+        self.pressure_fluctuation = pres_fluctuation
+        middle = (self.max_pressure + self.min_pressure) / 2
+        self.pressure_now = random.randint(middle - 20, middle + 20)
+
+    def current_pressure(self, time):
+        change = self.pressure_fluctuation * ((self.pressure_now - self.min_pressure) / (self.max_pressure - self.min_pressure))
+        middle = (self.max_pressure + self.min_pressure) / 2
+
+        if middle - 10 < self.pressure_now < middle + 10:
+            sign = random.choice([0, 0, 0, 0, 0, 0, 0, 1, -1])
+        elif self.pressure_now - 10 < middle:
+            sign = random.randint(0, 4) - 1
+        else:
+            sign = random.randint(-1, 3) - 1
+        new_pressure = max(min(self.pressure_now + sign * change, self.max_pressure), self.min_pressure)
+        self.pressure_now = new_pressure
+        return new_pressure
+
+
 class Thermometer:
     def __init__(self, params: TemperatureParams):
         self.parameters = params
@@ -60,6 +83,13 @@ class HumiditySensor:
     def current_humidity(self, time):
         return self.parameters.current_humidity(time)
 
+
+class Barometer:
+    def __init__(self, params: PressureParams):
+        self.parameters = params
+
+    def current_pressure(self, time):
+        self.parameters.current_pressure(time)
 
 
 
