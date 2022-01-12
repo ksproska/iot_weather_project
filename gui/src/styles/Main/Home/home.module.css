@@ -1,0 +1,9 @@
+.home_container {
+    height: calc(100% - 80px);
+    background-color: rgb(224, 224, 224);
+}
+
+.room_cards_container {
+    justify-content: space-between;
+    height: 100%;
+}
