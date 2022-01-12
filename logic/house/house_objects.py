@@ -92,13 +92,18 @@ class Room:
         self.sender.connect_to_broker()
         while True:
             t_now = time_now()
-            # time_now = datetime.datetime.now()
             if t_now - self.last_sent > 0.02:
-                temp = round(self.thermometer.current_temperature(t_now), 3)
-                hum = round(self.humidity_sensor.current_humidity(t_now), 2)
-                pres = round(self.barometer.current_pressure(t_now), 2)
-                self.sender.publish(f"{self.name}#{temp}#{hum}#{pres}")
+                self.send_message(t_now)
                 self.last_sent = t_now
+            elif self.last_sent - t_now > 23:
+                self.send_message(t_now)
+                self.last_sent = t_now
+
+    def send_message(self, time):
+        temp = round(self.thermometer.current_temperature(time), 3)
+        hum = round(self.humidity_sensor.current_humidity(time), 2)
+        pres = round(self.barometer.current_pressure(time), 2)
+        self.sender.publish(f"{self.name}#{temp}#{hum}#{pres}")
 
 
 def main():
