@@ -155,7 +155,7 @@ class Barometer:
         self.parameters = params
 
     def current_pressure(self, time: float, day: int, month: int):
-        self.parameters.current_pressure(time, day, month)
+        return self.parameters.current_pressure(time, day, month)
 
 
 
