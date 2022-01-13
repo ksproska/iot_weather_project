@@ -1,7 +1,4 @@
-import cassandra
-# pip install cassandra-driver
-from cassandra.cluster import Cluster, ResponseFuture, ResultSet
-
+import sqlite3
 from database.tables_as_classes import *
 
 
@@ -26,67 +23,71 @@ def all_commands_from_file(filename):
 
 
 class Connection:
-    def __init__(self, database_name='weather_project'):
-        cluster = Cluster()
-        self.__session = cluster.connect(database_name, wait_for_all_pools=True)
-        self.__session.execute(f'USE {database_name}')
+    def __init__(self, database_filename="weather_project.db"):
+        self.__connection = sqlite3.connect(database_filename)
+        self.__cursor = self.__connection.cursor()
+
+    def commit(self):
+        self.__connection.commit()
 
     def __run_lines_with_single_display(self, *lines):
         for line in lines:
             print_heading(f'EXECUTING LINE:')
             print(line)
             try:
-                result: ResultSet = self.__session.execute(line)
+                self.__cursor.execute(line)
             except Exception as e:
                 print_error(f'ERROR: {e}')
+        self.commit()
 
     def drop_tables(self):
-        all_drop = all_commands_from_file('drop_tables.cql')
-        self.__run_lines_with_single_display(*all_drop)
+        all_commands = all_commands_from_file('drop_tables.sql')
+        self.__run_lines_with_single_display(*all_commands)
 
     def init_tables(self):
-        all_drop = all_commands_from_file('init_tables.cql')
-        self.__run_lines_with_single_display(*all_drop)
+        all_commands = all_commands_from_file('init_tables.sql')
+        self.__run_lines_with_single_display(*all_commands)
 
     def add_object(self, addable_object: AddableToDatabase):
-        try:
-            # print(addable_object.sql_addable)
-            result: ResultSet = self.__session.execute(addable_object.sql_addable)
-            return result.one() is None
-        except Exception:
-            return False
+        result = self.__cursor.execute(addable_object.sql_addable)
+        self.commit()
+        return result.fetchone() is None
 
     def __get_all_objects(self, class_type, extra_conditions='') -> list:
         command = f'SELECT ' + ', '.join([str(x) for x in class_type.colums_order()]) \
                   + f' FROM {class_type.__name__}{extra_conditions};'
-        # print(command)
         all_objects = []
-        try:
-            result: ResultSet = self.__session.execute(command)
-            for row in result:
-                all_objects.append(class_type(*row))
-        except Exception:
-            pass
+        result = self.__cursor.execute(command).fetchall()
+        for row in result:
+            all_objects.append(class_type(*row))
         return all_objects
 
     def __get_current_preference(self, class_type, room_name: str):
-        time_now = str(datetime.now().time()) + '000'
         current = self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
-                                                   f'AND time_start < \'{time_now}\' '
-                                                   f'AND time_end > \'{time_now}\' '
-                                                   f'ORDER BY weight DESC '
-                                                   f'LIMIT 1 '
-                                                   f'ALLOW FILTERING')
+                                                     f'AND time(\'now\', \'localtime\') BETWEEN time_start AND time_end '
+                                                     f'ORDER BY weight DESC, '
+                                                     f'preference_timestamp DESC')
+        # [print(x) for x in current]
+        return current[0]
+
+    def __get_default_preference(self, class_type, room_name: str):
+        current = self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
+                                                     f'AND weight={class_type.WEIGHT_DEFAULT} '
+                                                     f'ORDER BY preference_timestamp DESC')
+        # [print(x) for x in current]
         return current[0]
 
     def __get_all_scheduled_preferences(self, class_type, room_name: str) -> list:
         return self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
-                                                   f'AND weight = {class_type.WEIGHT_SCHEDULE} '
-                                                   f'ALLOW FILTERING')
+                                                  f'AND weight = {class_type.WEIGHT_SCHEDULE} '
+                                                  f'ORDER BY time_start ASC')
 
-    def get_all_records(self, room_name: str):
-        return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' '
-                                                  f'ALLOW FILTERING')
+    def get_all_records(self, room_name: str, newest_to_oldest=True):
+        if newest_to_oldest:
+            order = 'DESC'
+        else:
+            order = 'ASC'
+        return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' ORDER BY record_time {order}')
 
     def get_all_scheduled_preferences_temperature(self, room_name: str):
         return self.__get_all_scheduled_preferences(Preference_temperature, room_name)
@@ -111,3 +112,9 @@ class Connection:
 
     def current_preference_humidity(self, room_name: str):
         return self.__get_current_preference(Preference_humidity, room_name).value
+
+    def default_preference_temperature(self, room_name: str) -> float:
+        return self.__get_default_preference(Preference_temperature, room_name).value
+
+    def default_preference_humidity(self, room_name: str):
+        return self.__get_default_preference(Preference_humidity, room_name).value
