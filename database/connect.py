@@ -10,10 +10,11 @@ def print_heading(message):
     print(f'\n\033[95m{message}\033[0m')
 
 
-def all_commands_from_file(filename):
+def all_commands_from_file(filename) -> list[str]:
     """
+    Splits file contents by ';' and returns list[str] of queries
+
     :param filename: file containing queries to be executed
-    :return: list[str] of queries
     """
     all_queries = []
     with open(filename, 'r', encoding='utf-8') as f:
@@ -38,14 +39,14 @@ class Connection:
 
     def execute(self, query_command):
         """
-        Changes will not be saved if commit is not run afterwards.
+        Executes given query. Changes will not be saved if commit is not run afterwards.
         """
         return self.__cursor.execute(query_command)
 
     def commit(self):
         self.__connection.commit()
 
-    def __run_lines_with_single_display(self, *lines):
+    def __run_lines_with_print(self, *lines):
         for line in lines:
             print_heading(f'EXECUTING LINE:')
             print(line)
@@ -57,11 +58,11 @@ class Connection:
 
     def drop_tables(self):
         all_commands = all_commands_from_file('drop_tables.sql')
-        self.__run_lines_with_single_display(*all_commands)
+        self.__run_lines_with_print(*all_commands)
 
     def init_tables(self):
         all_commands = all_commands_from_file('init_tables.sql')
-        self.__run_lines_with_single_display(*all_commands)
+        self.__run_lines_with_print(*all_commands)
 
     def add_object(self, addable_object: AddableToDatabase):
         """
@@ -72,7 +73,7 @@ class Connection:
 
     def __get_all_objects(self, class_type, extra_conditions='') -> list:
         """
-        :param class_type: object inheriting from AddableToDatabase
+        :param class_type: class type inheriting from AddableToDatabase
         :param extra_conditions: rest of the query after SELECT {col1, col2, ...} FROM {tablename}
         :return: list[class_type]
         """
@@ -90,9 +91,9 @@ class Connection:
 
         + time_start <= now() <= time_end
 
-        + for Temporary: now() - timestamp <= TTL
+        + for Temporary: now() - timestamp <= Preference.TTL
 
-        :param class_type: object inheriting from Preference
+        :param class_type: class type inheriting from Preference
         :param room_name: name of a room for WHERE condition
         :return: object of type class_type
         """
@@ -113,9 +114,9 @@ class Connection:
 
     def __get_default_preference(self, class_type, room_name: str):
         """
-            The most recent (preference_timestamp) with weight DEFAULT
+            The most recent (according to preference_timestamp) object of class_type, with weight DEFAULT
 
-            :param class_type: object inheriting from Preference
+            :param class_type: class type inheriting from Preference
             :param room_name: name of a room for WHERE condition
             :return: object of type class_type
         """
@@ -129,7 +130,7 @@ class Connection:
         """
             List of objects of class class_type, with weight SCHEDULE, sorted by time_start
 
-            :param class_type: object inheriting from Preference
+            :param class_type: class type inheriting from Preference
             :param room_name: name of a room for WHERE condition
             :return: list[class_type]
         """
