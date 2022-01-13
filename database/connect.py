@@ -75,11 +75,11 @@ class Connection:
         self.commit()
 
     def drop_tables(self):
-        all_commands = all_commands_from_file(f'{self.PROJECT_PATH}database\drop_tables.sql')
+        all_commands = all_commands_from_file(f'{self.PROJECT_PATH}database/drop_tables.sql')
         self.__run_lines(*all_commands)
 
     def init_tables_if_not_exist(self):
-        all_commands = all_commands_from_file(f'{self.PROJECT_PATH}database\init_tables.sql')
+        all_commands = all_commands_from_file(f'{self.PROJECT_PATH}database/init_tables.sql')
         self.__run_lines(*all_commands)
 
     def add_object(self, addable_object):
