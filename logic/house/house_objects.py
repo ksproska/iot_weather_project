@@ -13,8 +13,8 @@ from time import sleep
 def time_now():
     t_now = datetime.datetime.now()
     time = t_now.hour + t_now.minute / 60
-    return get_time() # get_time() to funkcja symulacji
-    # return time
+    return get_time(), 1 # get_time() to funkcja symulacji
+    # return time, t_now.month
 
 
 class Room:
@@ -25,8 +25,8 @@ class Room:
         self.barometer = barometer
         self.is_thermostat_on = False
         self.is_dryer_on = False
-        self.current_temperature = thermometer.current_temperature(get_time())
-        self.current_humidity = humidity_sensor.current_humidity(get_time())
+        self.current_temperature = thermometer.current_temperature(*time_now())
+        self.current_humidity = humidity_sensor.current_humidity(*time_now())
         self.receiver = receiver
         self.sender = sender
         self.temperature_delta = temperature_delta
@@ -40,8 +40,8 @@ class Room:
         self.last_sent = time_now()
 
     def update_temperature(self):
-        time = time_now()
-        temp = self.thermometer.current_temperature(time)
+        time, month = time_now()
+        temp = self.thermometer.current_temperature(time, month)
         temp_change = 0.0
 
         if self.is_thermostat_on:
@@ -54,8 +54,8 @@ class Room:
         self.current_temperature += temp_change
 
     def update_humidity(self):
-        time = time_now()
-        humidity = self.humidity_sensor.current_humidity(time)
+        time, month = time_now()
+        humidity = self.humidity_sensor.current_humidity(time, month)
         humidity_change = 0
 
         if self.is_dryer_on:
@@ -91,23 +91,23 @@ class Room:
     def sending(self):
         self.sender.connect_to_broker()
         while True:
-            t_now = time_now()
+            t_now, month = time_now()
             if t_now - self.last_sent > 0.02:
-                self.send_message(t_now)
+                self.send_message(t_now, month)
                 self.last_sent = t_now
             elif self.last_sent - t_now > 23:
-                self.send_message(t_now)
+                self.send_message(t_now, month)
                 self.last_sent = t_now
 
-    def send_message(self, time):
-        temp = round(self.thermometer.current_temperature(time), 3)
-        hum = round(self.humidity_sensor.current_humidity(time), 2)
-        pres = round(self.barometer.current_pressure(time), 2)
+    def send_message(self, time, month):
+        temp = round(self.thermometer.current_temperature(time, month), 3)
+        hum = round(self.humidity_sensor.current_humidity(time, month), 2)
+        pres = round(self.barometer.current_pressure(time, month), 2)
         self.sender.publish(f"{self.name}#{temp}#{hum}#{pres}")
 
 
 def main():
-    tempParams = TemperatureParams(10, 17, 0.3)
+    tempParams = TemperatureParams(0.3)
     humParams = HumidityParams(0, 0.78, 0.01, tempParams)
     presParams = PressureParams(970, 1020, 1)
     therm = Thermometer(tempParams)
