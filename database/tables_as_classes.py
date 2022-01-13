@@ -57,15 +57,15 @@ class Preference(AddableToDatabase):
     WEIGHT_DEFAULT = 0
     WEIGHT_SCHEDULE = 1
     WEIGHT_TEMPORARY = 2
-    TTL = timedelta(minutes=1)
+    TTL = timedelta(minutes=20)
 
     def __init__(self, preference_timestamp: datetime, room_name: str, time_start: time, time_end: time, value: float, weight: int):
         self.weight: int = weight
         self.room_name: str = room_name
+        self.value: float = value
         self.preference_timestamp: datetime = preference_timestamp
         self.time_start: time = time_start
         self.time_end: time = time_end
-        self.value: float = value
 
     @classmethod
     def as_default(cls, value, room_name):
@@ -79,17 +79,20 @@ class Preference(AddableToDatabase):
 
     @classmethod
     def as_temporary(cls, value, room_name):
-        safety_delta = timedelta(minutes=1)
-        time_start = (datetime.now() - safety_delta).time()
-        time_end = (datetime.now() + cls.TTL).time()
+        safety_delta = timedelta(seconds=60)
+        time_start = (datetime.now() - safety_delta)
+        time_end = (time_start + safety_delta + cls.TTL).time()
+        time_start = time_start.time()
+        time_start = time_start.replace(microsecond=0)
+        time_end = time_end.replace(microsecond=0)
         return cls(datetime.now(), room_name, time_start, time_end, value, cls.WEIGHT_TEMPORARY)
 
-    @property
-    def sql_addable(self):
-        command = super().sql_addable
-        if self.weight == self.WEIGHT_TEMPORARY:
-            command = command[:-2] + f' USING TTL {self.TTL.seconds};\n'
-        return command
+    # @property
+    # def sql_addable(self):
+    #     command = super().sql_addable
+    #     if self.weight == self.WEIGHT_TEMPORARY:
+    #         command = command[:-2] + f' USING TTL {self.TTL.seconds};\n'
+    #     return command
 
 
 class Preference_temperature(Preference):

@@ -51,15 +51,22 @@ class DBTest(unittest.TestCase):
             preferences_tem = self.connection.get_all_scheduled_preferences_humidity(room_name)
             [print(x) for x in preferences_tem]
 
+        print_heading(f'CURRENT AIM -------------------------------------------------------------')
         for room_name in self.ROOM_NAMES:
-            print_heading(f'{room_name}: CURRENT -----------------------------------------------------------------')
+            print_heading(room_name)
             print(f'temperature: {self.connection.current_preference_temperature(room_name)}')
             print(f'humidity:    {self.connection.current_preference_humidity(room_name)}')
+
+        print_heading(f'DEFAULT -----------------------------------------------------------------')
+        for room_name in self.ROOM_NAMES:
+            print_heading(room_name)
+            print(f'temperature: {self.connection.default_preference_temperature(room_name)}')
+            print(f'humidity:    {self.connection.default_preference_humidity(room_name)}')
 
     def test_display_records(self):
         for room_name in self.ROOM_NAMES:
             print_heading(f'{room_name}: RECORDINGS --------------------------------------------------------------')
-            [print(x) for x in self.connection.get_all_records(room_name)]
+            [print(x) for x in self.connection.get_all_records(room_name, newest_to_oldest=True)]
 
     def test_adding_preference_temperature_temp(self):
         for room_name in self.ROOM_NAMES:
