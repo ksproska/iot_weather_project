@@ -46,6 +46,9 @@ class Connection:
     def commit(self):
         self.__connection.commit()
 
+    def close(self):
+        self.__connection.close()
+
     def __run_lines_with_print(self, *lines):
         for line in lines:
             print_heading(f'EXECUTING LINE:')
@@ -77,7 +80,7 @@ class Connection:
         :param extra_conditions: rest of the query after SELECT {col1, col2, ...} FROM {tablename}
         :return: list[class_type]
         """
-        command = f'SELECT ' + ', '.join([str(x) for x in class_type.colums_order()]) \
+        command = f'SELECT ' + ', '.join([str(x) for x in class_type.columns_order()]) \
                   + f' FROM {class_type.__name__}{extra_conditions};'
         all_objects = []
         result = self.execute(command).fetchall()
