@@ -106,8 +106,8 @@ class Room:
                 self.last_sent = t_now
 
     def send_message(self, time, day, month):
-        temp = round(self.thermometer.current_temperature(time, day, month), 3)
-        hum = round(self.humidity_sensor.current_humidity(time, day, month), 2)
+        temp = round(self.current_temperature, 3)
+        hum = round(self.current_humidity, 2)
         pres = self.barometer.current_pressure(time, day, month)
         self.sender.publish(f"{self.name}#{temp}#{hum}#{pres}")
 
