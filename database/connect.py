@@ -29,6 +29,8 @@ def all_commands_from_file(filename):
 
 class Connection:
     PROJECT_PATH = '/home/pi/Desktop/proj/iot_weather_project/'
+    DEFAULT_TEMPERATURE = 12
+    DEFAULT_HUMIDITY = 30
     # PROJECT_PATH = 'C:/python/iot_weather_project/'
 
     def __init__(self, database_filename=f"{PROJECT_PATH}weather_project.db"):
@@ -42,14 +44,14 @@ class Connection:
         self.init_tables_if_not_exist()
 
     def register_room(self, room_name):
-        command1 = f'SELECT COUNT(*) FROM {Preference_temperature.__name__} WHERE room_name=\'{room_name}\';'
-        command2 = f'SELECT COUNT(*) FROM {Preference_humidity.__name__} WHERE room_name=\'{room_name}\';'
-        count1 = self.execute(command1).fetchone()[0]
-        count2 = self.execute(command2).fetchone()[0]
-        if count1 == 0:
-            self.add_object(Preference_temperature.as_default(12, room_name))
-        if count2 == 0:
-            self.add_object(Preference_humidity.as_default(30, room_name))
+        command_temperature = f'SELECT COUNT(*) FROM {Preference_temperature.__name__} WHERE room_name=\'{room_name}\';'
+        command_humidity = f'SELECT COUNT(*) FROM {Preference_humidity.__name__} WHERE room_name=\'{room_name}\';'
+        count_temperature = self.execute(command_temperature).fetchone()[0]
+        count_humidity = self.execute(command_humidity).fetchone()[0]
+        if count_temperature == 0:
+            self.add_object(Preference_temperature.as_default(self.DEFAULT_TEMPERATURE, room_name))
+        if count_humidity == 0:
+            self.add_object(Preference_humidity.as_default(self.DEFAULT_HUMIDITY, room_name))
 
     def execute(self, query_command):
         """
