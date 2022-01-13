@@ -10,7 +10,7 @@ class DBTest:
     def example_setup(cls):
         connection = Connection()
         connection.drop_tables()
-        connection.init_tables()
+        connection.init_tables_if_not_exist()
         print_heading('ADDING PREFERENCES')
         for room_name in cls.ROOM_NAMES:
             connection.add_object(Preference_temperature.as_default(21, room_name))

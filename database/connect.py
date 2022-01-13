@@ -28,7 +28,10 @@ def all_commands_from_file(filename):
 
 
 class Connection:
-    def __init__(self, database_filename="weather_project.db"):
+    PROJECT_PATH = '/home/pi/Desktop/proj/iot_weather_project/'
+    # PROJECT_PATH = 'C:/python/iot_weather_project/'
+
+    def __init__(self, database_filename=f"{PROJECT_PATH}weather_project.db"):
         """
         Establishing connection for database, necessary for executing any queries.
 
@@ -36,6 +39,17 @@ class Connection:
         """
         self.__connection = sqlite3.connect(database_filename)
         self.__cursor = self.__connection.cursor()
+        self.init_tables_if_not_exist()
+
+    def register_room(self, room_name):
+        command1 = f'SELECT COUNT(*) FROM {Preference_temperature.__name__} WHERE room_name=\'{room_name}\';'
+        command2 = f'SELECT COUNT(*) FROM {Preference_humidity.__name__} WHERE room_name=\'{room_name}\';'
+        count1 = self.execute(command1).fetchone()[0]
+        count2 = self.execute(command2).fetchone()[0]
+        if count1 == 0:
+            self.add_object(Preference_temperature.as_default(12, room_name))
+        if count2 == 0:
+            self.add_object(Preference_humidity.as_default(30, room_name))
 
     def execute(self, query_command):
         """
@@ -49,23 +63,24 @@ class Connection:
     def close(self):
         self.__connection.close()
 
-    def __run_lines_with_print(self, *lines):
+    def __run_lines(self, *lines):
         for line in lines:
-            print_heading(f'EXECUTING LINE:')
-            print(line)
+            # print_heading(f'EXECUTING LINE:')
+            # print(line)
             try:
                 self.execute(line)
             except Exception as e:
-                print_error(f'ERROR: {e}')
+                pass
+                # print_error(f'ERROR: {e}')
         self.commit()
 
     def drop_tables(self):
-        all_commands = all_commands_from_file('drop_tables.sql')
-        self.__run_lines_with_print(*all_commands)
+        all_commands = all_commands_from_file(f'{self.PROJECT_PATH}database\drop_tables.sql')
+        self.__run_lines(*all_commands)
 
-    def init_tables(self):
-        all_commands = all_commands_from_file('init_tables.sql')
-        self.__run_lines_with_print(*all_commands)
+    def init_tables_if_not_exist(self):
+        all_commands = all_commands_from_file(f'{self.PROJECT_PATH}database\init_tables.sql')
+        self.__run_lines(*all_commands)
 
     def add_object(self, addable_object):
         """
@@ -100,6 +115,7 @@ class Connection:
         :param room_name: name of a room for WHERE condition
         :return: object of type class_type
         """
+        self.register_room(room_name)
         current = self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
                                                          f'AND time(\'now\', \'localtime\') BETWEEN time_start AND time_end '
                                                          f'AND ('
@@ -123,6 +139,7 @@ class Connection:
             :param room_name: name of a room for WHERE condition
             :return: object of type class_type
         """
+        self.register_room(room_name)
         current = self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
                                                          f'AND weight={class_type.WEIGHT_DEFAULT} '
                                                      f'ORDER BY preference_timestamp DESC')

@@ -1,4 +1,4 @@
-CREATE TABLE record (
+CREATE TABLE IF NOT EXISTS record (
     record_time timestamp,
     room_name text,
     record_temp double,
@@ -12,7 +12,7 @@ CREATE TABLE record (
 );
 
 
-CREATE TABLE preference_temperature (
+CREATE TABLE IF NOT EXISTS preference_temperature (
     preference_timestamp timestamp,
     time_start time,
     time_end time,
@@ -23,7 +23,7 @@ CREATE TABLE preference_temperature (
 );
 
 
-CREATE TABLE preference_humidity (
+CREATE TABLE IF NOT EXISTS preference_humidity (
     preference_timestamp timestamp,
     time_start time,
     time_end time,
