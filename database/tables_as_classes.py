@@ -84,12 +84,12 @@ class Preference(AddableToDatabase):
         time_end = (datetime.now() + cls.TTL).time()
         return cls(datetime.now(), room_name, time_start, time_end, value, cls.WEIGHT_TEMPORARY)
 
-    @property
-    def sql_addable(self):
-        command = super().sql_addable
-        if self.weight == self.WEIGHT_TEMPORARY:
-            command = command[:-2] + f' USING TTL {self.TTL.seconds};\n'
-        return command
+    # @property
+    # def sql_addable(self):
+    #     command = super().sql_addable
+    #     if self.weight == self.WEIGHT_TEMPORARY:
+    #         command = command[:-2] + f' USING TTL {self.TTL.seconds};\n'
+    #     return command
 
 
 class Preference_temperature(Preference):
