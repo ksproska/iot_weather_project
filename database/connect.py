@@ -80,14 +80,14 @@ class Connection:
 
     def __get_default_preference(self, class_type, room_name: str):
         current = self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
-                                                     f'AND weight={class_type.WEIGHT_DEFAULT} '
+                                                         f'AND weight={class_type.WEIGHT_DEFAULT} '
                                                      f'ORDER BY preference_timestamp DESC')
         # [print(x) for x in current]
         return current[0]
 
     def __get_all_scheduled_preferences(self, class_type, room_name: str) -> list:
         return self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
-                                                  f'AND weight = {class_type.WEIGHT_SCHEDULE} '
+                                                    f'AND weight = {class_type.WEIGHT_SCHEDULE} '
                                                   f'ORDER BY time_start ASC')
 
     def get_all_records(self, room_name: str, newest_to_oldest=True):
@@ -95,7 +95,8 @@ class Connection:
             order = 'DESC'
         else:
             order = 'ASC'
-        return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' ORDER BY record_time {order}')
+        return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' '
+                                              f'ORDER BY record_time {order}')
 
     def get_all_scheduled_preferences_temperature(self, room_name: str):
         return self.__get_all_scheduled_preferences(Preference_temperature, room_name)
