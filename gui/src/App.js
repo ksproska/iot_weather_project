@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -7,27 +7,30 @@ import Home from "./components/Main/Home/Home";
 import Room from "./components/Main/Room/Room";
 import WrongPage from "./components/Main/WrongPage";
 
+import fetchRoomnames from "./utils/fetchRoomnames";
+
 function App() {
 
+    const [rooms, setRooms] = useState(null);
+    const [isLoaded, setIsLoaded] = useState(false);
+
     useEffect(() => {
-        fetch("/roomnames", {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json()).then(result => {
-            console.log(result);
+        fetchRoomnames().then(result => {
+            setRooms(result);
+            setIsLoaded(true);
         }).catch((err) => {
             console.error(err);
+            setRooms(null);
+            setIsLoaded(true);
         });
-    });
+    }, []);
 
     return (
         <div className="App" style={{ height: '100%' }}>
             <BrowserRouter>
-                <Header />
+                {isLoaded ? <Header rooms={rooms} /> : null}
                 <Routes>
-                    <Route path="/" element={<Home />} />
+                    <Route path="/" element={<Home rooms={rooms} />} />
                     <Route path="/room/:roomId" element={<Room />} />
                     <Route path="*" element={<WrongPage />} />
                 </Routes>
