@@ -1,20 +1,18 @@
-from logic.environment.simulation_objects import Thermometer, HumiditySensor, Barometer, get_time, PressureParams, TemperatureParams, HumidityParams
+from logic.environment.simulation_objects import Thermometer, HumiditySensor, Barometer, PressureParams, TemperatureParams, HumidityParams
 from logic.communication.receiver import Receiver
 from logic.communication.sender import Sender
 from logic.communication.constants import *
 from threading import Thread
-from logic.environment.simulation_objects import get_time
+from logic.environment.simulation_objects import simulated_time, normal_time
 import random
 import datetime
 import json
 from time import sleep
 
 
-def time_now():
-    t_now = datetime.datetime.now()
-    time = t_now.hour + t_now.minute / 60
-    return get_time(), 1 # get_time() to funkcja symulacji
-    # return time, t_now.month
+def time_now(month=1):
+    # return normal_time()
+    return simulated_time(month=month)
 
 
 class Room:
@@ -31,16 +29,16 @@ class Room:
         self.sender = sender
         self.temperature_delta = temperature_delta
         self.humidity_delta = humidity_delta
-        self.last_measurement = time_now()
+        # self.last_measurement = time_now()
 
         with open('config.json') as file:
             config = json.load(file)
             self.name = config['name']
 
-        self.last_sent = time_now()
+        self.last_sent, _, _ = time_now()
 
     def update_temperature(self):
-        time, month = time_now()
+        time, day, month = time_now()
         temp = self.thermometer.current_temperature(time, month)
         temp_change = 0.0
 
@@ -54,8 +52,8 @@ class Room:
         self.current_temperature += temp_change
 
     def update_humidity(self):
-        time, month = time_now()
-        humidity = self.humidity_sensor.current_humidity(time, month)
+        time, day, month = time_now()
+        humidity = self.humidity_sensor.current_humidity(time, day, month)
         humidity_change = 0
 
         if self.is_dryer_on:
@@ -91,18 +89,18 @@ class Room:
     def sending(self):
         self.sender.connect_to_broker()
         while True:
-            t_now, month = time_now()
+            t_now, day, month = time_now()
             if t_now - self.last_sent > 0.02:
-                self.send_message(t_now, month)
+                self.send_message(t_now, day, month)
                 self.last_sent = t_now
             elif self.last_sent - t_now > 23:
-                self.send_message(t_now, month)
+                self.send_message(t_now, day, month)
                 self.last_sent = t_now
 
-    def send_message(self, time, month):
-        temp = round(self.thermometer.current_temperature(time, month), 3)
-        hum = round(self.humidity_sensor.current_humidity(time, month), 2)
-        pres = round(self.barometer.current_pressure(time, month), 2)
+    def send_message(self, time, day, month):
+        temp = round(self.thermometer.current_temperature(time, day, month), 3)
+        hum = round(self.humidity_sensor.current_humidity(time, day, month), 2)
+        pres = round(self.barometer.current_pressure(time, day, month), 2)
         self.sender.publish(f"{self.name}#{temp}#{hum}#{pres}")
 
 
