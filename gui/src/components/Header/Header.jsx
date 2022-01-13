@@ -23,7 +23,7 @@ function Header({ rooms }) {
                                 <HomeIcon className={styles.header_home_icon} />
                             </Button>
                         </Link>
-                        {rooms['rooms'].map((room) =>
+                        {rooms != null ? rooms['rooms'].map((room) =>
                             <Link to={"/room/" + room['room_identifier']} key={room['room_identifier']}>
                                 <Button variant="outlined" className={styles.header_button}>
                                     <Typography className={styles.header_button_text}>
@@ -31,7 +31,7 @@ function Header({ rooms }) {
                                     </Typography>
                                 </Button>
                             </Link>
-                        )}
+                        ) : null}
                     </Box>
                 </Toolbar>
             </AppBar>
