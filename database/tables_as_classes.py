@@ -26,7 +26,10 @@ class AddableToDatabase:
         return  f'{class_} {all_merged}'
 
     @classmethod
-    def colums_order(cls):
+    def columns_order(cls) -> list[str]:
+        """
+        :return: list of argument names for current class constructor in the order that they are required
+        """
         return inspect.getfullargspec(cls).args[1:]
 
 
@@ -57,7 +60,7 @@ class Preference(AddableToDatabase):
     WEIGHT_DEFAULT = 0
     WEIGHT_SCHEDULE = 1
     WEIGHT_TEMPORARY = 2
-    TTL = timedelta(minutes=20)
+    TTL = timedelta(minutes=20) # how long the temporary preference is deemed applicable
 
     def __init__(self, preference_timestamp: datetime, room_name: str, time_start: time, time_end: time, value: float, weight: int):
         self.weight: int = weight
