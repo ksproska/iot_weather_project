@@ -55,10 +55,9 @@ def get_current_room_state(room_identifier):
 
 @routes.route(r"/<room_identifier>/aims")
 def get_room_aims(room_identifier):
-    def_tmp_and_hum = []
     temp_prefs = db_connection.get_all_scheduled_preferences_temperature(room_identifier)
     hum_prefs = db_connection.get_all_scheduled_preferences_humidity(room_identifier)
-    dict_to_json = {"def_temp":24.56, "def_hum":60.45, "temp_prefs": [], "hum_prefs":[]}
+    dict_to_json = {"def_temp":db_connection.default_preference_temperature(room_identifier), "def_hum":db_connection.default_preference_humidity(room_identifier), "temp_prefs": [], "hum_prefs":[]}
     for tmp_pref_rec in temp_prefs:
         dict_to_json["temp_prefs"].append({"time_start":str(tmp_pref_rec.time_start)[0:-3], "time_end":str(tmp_pref_rec.time_end)[0:-3], "temp":tmp_pref_rec.value})
     for hum_pref_rec in hum_prefs:
