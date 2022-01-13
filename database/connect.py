@@ -64,9 +64,17 @@ class Connection:
 
     def __get_current_preference(self, class_type, room_name: str):
         current = self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
-                                                     f'AND time(\'now\', \'localtime\') BETWEEN time_start AND time_end '
+                                                         f'AND time(\'now\', \'localtime\') BETWEEN time_start AND time_end '
+                                                         f'AND ('
+                                                             f'weight={class_type.WEIGHT_TEMPORARY} '
+                                                             f'AND datetime(\'now\', \'localtime\') - preference_timestamp <= {class_type.TTL.seconds} '
+                                                             f'OR ('
+                                                                 f'weight={class_type.WEIGHT_DEFAULT} '
+                                                                 f'OR weight = {class_type.WEIGHT_SCHEDULE}'
+                                                             f')'
+                                                         f') '
                                                      f'ORDER BY weight DESC, '
-                                                     f'preference_timestamp DESC')
+                                                        f'preference_timestamp DESC')
         # [print(x) for x in current]
         return current[0]
 
