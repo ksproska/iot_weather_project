@@ -10,7 +10,7 @@ def print_heading(message):
     print(f'\n\033[95m{message}\033[0m')
 
 
-def all_commands_from_file(filename) -> list[str]:
+def all_commands_from_file(filename):
     """
     Splits file contents by ';' and returns list[str] of queries
 
@@ -67,14 +67,14 @@ class Connection:
         all_commands = all_commands_from_file('init_tables.sql')
         self.__run_lines_with_print(*all_commands)
 
-    def add_object(self, addable_object: AddableToDatabase):
+    def add_object(self, addable_object):
         """
         :param addable_object: object inheriting from AddableToDatabase
         """
         self.execute(addable_object.sql_addable)
         self.commit()
 
-    def __get_all_objects(self, class_type, extra_conditions='') -> list:
+    def __get_all_objects(self, class_type, extra_conditions=''):
         """
         :param class_type: class type inheriting from AddableToDatabase
         :param extra_conditions: rest of the query after SELECT {col1, col2, ...} FROM {tablename}
@@ -88,7 +88,7 @@ class Connection:
             all_objects.append(class_type(*row))
         return all_objects
 
-    def __get_current_preference(self, class_type, room_name: str):
+    def __get_current_preference(self, class_type, room_name):
         """
         Rules for accessing current:
 
@@ -115,7 +115,7 @@ class Connection:
         # [print(x) for x in current]
         return current[0]
 
-    def __get_default_preference(self, class_type, room_name: str):
+    def __get_default_preference(self, class_type, room_name):
         """
             The most recent (according to preference_timestamp) object of class_type, with weight DEFAULT
 
@@ -129,7 +129,7 @@ class Connection:
         # [print(x) for x in current]
         return current[0]
 
-    def __get_all_scheduled_preferences(self, class_type, room_name: str) -> list:
+    def __get_all_scheduled_preferences(self, class_type, room_name):
         """
             List of objects of class class_type, with weight SCHEDULE, sorted by time_start
 
@@ -141,7 +141,7 @@ class Connection:
                                                     f'AND weight = {class_type.WEIGHT_SCHEDULE} '
                                                   f'ORDER BY time_start ASC')
 
-    def get_all_records(self, room_name: str, newest_to_oldest=True):
+    def get_all_records(self, room_name, newest_to_oldest=True):
         """
         :param room_name: name of a room for WHERE condition
         :param newest_to_oldest: sorting order
@@ -168,21 +168,21 @@ class Connection:
         return self.__get_all_objects(Record)
 
     # getters for scheduled preferences ________________________________________________________________________________
-    def get_all_scheduled_preferences_temperature(self, room_name: str):
+    def get_all_scheduled_preferences_temperature(self, room_name):
         return self.__get_all_scheduled_preferences(Preference_temperature, room_name)
 
-    def get_all_scheduled_preferences_humidity(self, room_name: str):
+    def get_all_scheduled_preferences_humidity(self, room_name):
         return self.__get_all_scheduled_preferences(Preference_humidity, room_name)
 
     # different preferences value getters ______________________________________________________________________________
-    def current_preference_temperature(self, room_name: str) -> float:
+    def current_preference_temperature(self, room_name):
         return self.__get_current_preference(Preference_temperature, room_name).value
 
-    def current_preference_humidity(self, room_name: str) -> float:
+    def current_preference_humidity(self, room_name):
         return self.__get_current_preference(Preference_humidity, room_name).value
 
-    def default_preference_temperature(self, room_name: str) -> float:
+    def default_preference_temperature(self, room_name):
         return self.__get_default_preference(Preference_temperature, room_name).value
 
-    def default_preference_humidity(self, room_name: str) -> float:
+    def default_preference_humidity(self, room_name):
         return self.__get_default_preference(Preference_humidity, room_name).value

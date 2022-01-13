@@ -26,7 +26,7 @@ class AddableToDatabase:
         return  f'{class_} {all_merged}'
 
     @classmethod
-    def columns_order(cls) -> list[str]:
+    def columns_order(cls):
         """
         :return: list of argument names for current class constructor in the order that they are required
         """
@@ -34,24 +34,24 @@ class AddableToDatabase:
 
 
 class Record(AddableToDatabase):
-    def __init__(self, record_time: datetime, room_name: str, record_temp: float, record_humidity: float,
-                 record_press: int, device_termost: bool, device_dryer: bool):
-        self.record_time: datetime = record_time
-        self.room_name: str = room_name
-        self.record_temp: float = record_temp
-        self.record_humidity: float = record_humidity
-        self.record_press: int = record_press
+    def __init__(self, record_time: datetime, room_name, record_temp, record_humidity,
+                 record_press, device_termost, device_dryer):
+        self.record_time = record_time
+        self.room_name = room_name
+        self.record_temp = record_temp
+        self.record_humidity = record_humidity
+        self.record_press = record_press
 
-        self.device_termost: bool = device_termost
-        self.device_dryer: bool = device_dryer
+        self.device_termost = device_termost
+        self.device_dryer = device_dryer
 
     @classmethod
-    def with_current_time(cls, room_name: str, record_temp: float, record_humidity: float,
-                 record_press: int, device_termost: bool, device_dryer: bool):
+    def with_current_time(cls, room_name, record_temp, record_humidity,
+                 record_press, device_termost, device_dryer):
         return cls(datetime.now(), room_name, record_temp, record_humidity, record_press, device_termost, device_dryer)
 
 
-def get_time(hour: int, minutes: int = 0, sec: int = 0) -> time:
+def get_time(hour, minutes = 0, sec = 0) -> time:
      return datetime.strptime(f'{hour:02}::{minutes:02}::{sec:02}',
                               '%H::%M::%S').time()
 
@@ -62,13 +62,13 @@ class Preference(AddableToDatabase):
     WEIGHT_TEMPORARY = 2
     TTL = timedelta(minutes=20) # how long the temporary preference is deemed applicable
 
-    def __init__(self, preference_timestamp: datetime, room_name: str, time_start: time, time_end: time, value: float, weight: int):
-        self.weight: int = weight
-        self.room_name: str = room_name
-        self.value: float = value
-        self.preference_timestamp: datetime = preference_timestamp
-        self.time_start: time = time_start
-        self.time_end: time = time_end
+    def __init__(self, preference_timestamp, room_name, time_start, time_end, value, weight):
+        self.weight = weight
+        self.room_name = room_name
+        self.value = value
+        self.preference_timestamp = preference_timestamp
+        self.time_start = time_start
+        self.time_end = time_end
 
     @classmethod
     def as_default(cls, value, room_name):
@@ -77,7 +77,7 @@ class Preference(AddableToDatabase):
         return cls(datetime.now(), room_name, time_start, time_end, value, cls.WEIGHT_DEFAULT)
 
     @classmethod
-    def as_schedule(cls, value, room_name, time_start: time, time_end: time):
+    def as_schedule(cls, value, room_name, time_start, time_end):
         return cls(datetime.now(), room_name, time_start, time_end, value, cls.WEIGHT_SCHEDULE)
 
     @classmethod
