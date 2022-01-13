@@ -16,7 +16,7 @@ def normal_time() -> (float, int, int):
     date_now = datetime.datetime.now()
     day = date_now.day
     month = date_now.month
-    hour = date_now.hour + date_now.minute / 60
+    hour = date_now.hour + date_now.minute / 60 + date_now.second / 3600
     return round(hour, 4), day, month
 
 
@@ -131,7 +131,7 @@ class PressureParams:
             sign = random.randint(-1, 3) - 1
         new_pressure = max(min(self.pressure_now + sign * change, self.max_pressure), self.min_pressure)
         self.pressure_now = new_pressure
-        return new_pressure
+        return int(new_pressure)
 
 
 class Thermometer:

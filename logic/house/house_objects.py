@@ -16,6 +16,13 @@ def time_now(month=1):
 
 
 class Room:
+    MINUTE_5 = 0.08
+    MINUTE_2 = 0.032
+    MINUTE_1 = 0.016
+    SECONDS_30 = 0.008
+    SECONDS_15 = 0.004
+    SECONDS_5 = 0.00013
+
     def __init__(self, thermometer: Thermometer, humidity_sensor: HumiditySensor, barometer: Barometer,
                  receiver: Receiver, sender: Sender, temperature_delta=0.2, humidity_delta=0.05):
         self.thermometer = thermometer
@@ -29,7 +36,6 @@ class Room:
         self.sender = sender
         self.temperature_delta = temperature_delta
         self.humidity_delta = humidity_delta
-        # self.last_measurement = time_now()
 
         with open('config.json') as file:
             config = json.load(file)
@@ -37,9 +43,9 @@ class Room:
 
         self.last_sent, _, _ = time_now()
 
-    def update_temperature(self):
+    def __update_temperature(self):
         time, day, month = time_now()
-        temp = self.thermometer.current_temperature(time, month)
+        temp = self.thermometer.current_temperature(time, day, month)
         temp_change = 0.0
 
         if self.is_thermostat_on:
@@ -51,7 +57,7 @@ class Room:
 
         self.current_temperature += temp_change
 
-    def update_humidity(self):
+    def __update_humidity(self):
         time, day, month = time_now()
         humidity = self.humidity_sensor.current_humidity(time, day, month)
         humidity_change = 0
@@ -64,6 +70,10 @@ class Room:
             humidity -= (self.humidity_delta * random.random())
 
         self.current_humidity += min(max(humidity_change, 0), 1)
+
+    def update_all_parameters(self):
+        self.__update_humidity()
+        self.__update_temperature()
 
     def update_devices(self, message):
         name, is_thermostat_on, is_dryer_on = self.__decode_message(message.payload.decode('utf-8'))
@@ -83,14 +93,12 @@ class Room:
         self.receiver.loop_start()
         self.receiver.client.on_message = lambda client, userdata, message: self.update_devices(message)
         self.receiver.subscribe()
-        while True:
-            pass
 
-    def sending(self):
+    def sending(self, delay=MINUTE_1):
         self.sender.connect_to_broker()
         while True:
             t_now, day, month = time_now()
-            if t_now - self.last_sent > 0.02:
+            if t_now - self.last_sent > delay:
                 self.send_message(t_now, day, month)
                 self.last_sent = t_now
             elif self.last_sent - t_now > 23:
@@ -100,8 +108,12 @@ class Room:
     def send_message(self, time, day, month):
         temp = round(self.thermometer.current_temperature(time, day, month), 3)
         hum = round(self.humidity_sensor.current_humidity(time, day, month), 2)
-        pres = round(self.barometer.current_pressure(time, day, month), 2)
+        pres = self.barometer.current_pressure(time, day, month)
         self.sender.publish(f"{self.name}#{temp}#{hum}#{pres}")
+
+    def start(self):
+        while True:
+            self.update_all_parameters()
 
 
 def main():
@@ -115,9 +127,9 @@ def main():
     receiver = Receiver('localhost', DIRECTIVES)  # ip do zmiany
     room = Room(therm, humSensor, barom, receiver, sender, temperature_delta=0.07, humidity_delta=0.02)
     Thread(target=lambda: room.listening()).start()
-    Thread(target=lambda: room.sending()).start()
+    Thread(target=lambda: room.sending(delay=Room.SECONDS_15)).start()
     while True:
-        pass
+        room.start()
 
 
 if __name__ == '__main__':
