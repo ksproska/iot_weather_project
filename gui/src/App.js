@@ -31,7 +31,9 @@ function App() {
                 {isLoaded ? <Header rooms={rooms} /> : null}
                 <Routes>
                     <Route path="/" element={<Home rooms={rooms} />} />
-                    <Route path="/room/:roomId" element={<Room />} />
+                    {rooms != null ? rooms['rooms'].map((room) =>
+                        <Route path={"/room/" + room['room_identifier']} element={<Room room={room} />}
+                            key={room['room_identifier']} />) : null}
                     <Route path="*" element={<WrongPage />} />
                 </Routes>
             </BrowserRouter>

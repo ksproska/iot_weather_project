@@ -9,11 +9,11 @@ import Typography from "@mui/material/Typography";
 
 import styles from "../../../styles/Main/Home/roomCard.module.css";
 
-// TODO: przyjmować roomId, temp, hum, press jako propsy
 function RoomCard({ room }) {
+
     return (
         <Card className={styles.room_card_container} elevation={5}>
-            <CardHeader title="Living room" />
+            <CardHeader title={room["display_name"]} />
             <CardContent>
                 <Typography>
                     Temperature: {room['temperature']}
@@ -25,10 +25,10 @@ function RoomCard({ room }) {
                     Pressure: {room['pressure']}
                 </Typography>
                 <Typography>
-                    Thermostat: {room['thermostat_state']}
+                    Thermostat: {room['thermostat_state'] === true ? "ON" : "OFF"}
                 </Typography>
                 <Typography>
-                    Dryer: {room['dryer_state']}
+                    Dryer: {room['dryer_state'] === true ? "ON" : "OFF"}
                 </Typography>
             </CardContent>
             <CardActions>
