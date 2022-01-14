@@ -1,3 +1,10 @@
+.room_main_box {
+    padding-top: 20px;
+    background-color: rgb(231, 231, 231);
+    height: calc(100vh - 100px);
+    width: 100%;
+}
+
 .chart_grid_container {
     width: 90% !important;
     /* margin-top: 20px; */
@@ -42,10 +49,4 @@
 .chart_checkboxes_column {
     border: 1px solid black;
     border-left: none;
-}
-
-.room_main_box {
-    padding-top: 20px;
-    background-color: rgb(231, 231, 231);
-    height: calc(100vh - 100px);
 }

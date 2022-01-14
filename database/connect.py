@@ -28,7 +28,7 @@ def all_commands_from_file(filename):
 
 
 class Connection:
-    PROJECT_PATH = '/home/pi/Desktop/proj/iot_weather_project/'
+    PROJECT_PATH = '/home/kyatt/Desktop/uczelnia/IoT/iot_weather_project/'
     DEFAULT_TEMPERATURE = 12
     DEFAULT_HUMIDITY = 30
     # PROJECT_PATH = 'C:/python/iot_weather_project/'

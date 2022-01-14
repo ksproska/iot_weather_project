@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import Grid from "@mui/material/Grid";
+
 import Header from "./components/Header/Header";
 import Home from "./components/Main/Home/Home";
 import Room from "./components/Main/Room/Room";
@@ -27,6 +29,7 @@ function App() {
 
     return (
         <div className="App" style={{ height: '100%' }}>
+            <Grid container sx={{height: '100%'}}>
             <BrowserRouter>
                 {isLoaded ? <Header rooms={rooms} /> : null}
                 <Routes>
@@ -37,6 +40,7 @@ function App() {
                     <Route path="*" element={<WrongPage />} />
                 </Routes>
             </BrowserRouter>
+            </Grid>
         </div>
     );
 }

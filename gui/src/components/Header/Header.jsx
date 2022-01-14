@@ -14,8 +14,8 @@ import styles from "../../styles/Header/header.module.css";
 function Header({ rooms }) {
 
     return (
-        <Grid item xs={12}>
-            <AppBar position="static">
+        <Grid item xs={12} className={styles.header_container}>
+            <AppBar position="fixed">
                 <Toolbar disableGutters className={styles.header_toolbar}>
                     <Box className={styles.header_button_box}>
                         <Link to="/">

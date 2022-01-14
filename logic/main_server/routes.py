@@ -1,6 +1,6 @@
 from database.connect import Connection
 from flask import Blueprint, jsonify, current_app
-from communication import receiver, sender, constants
+from logic.communication import receiver, sender, constants
 from datetime import datetime
 import json
 
@@ -28,6 +28,7 @@ def get_room_data():
 @routes.route(r"/<room_identifier>/data")
 def get_data_for_room(room_identifier):
     # Get data from database
+    db_connection = Connection()
     list_of_records = db_connection.get_all_records(room_identifier)
     dict_to_json = {"day":[], "week":[], "month":[]}
     for rec in list_of_records:
@@ -47,7 +48,7 @@ def get_data_for_room(room_identifier):
 def get_current_room_state(room_identifier):
 
     # Get the state for the latest record
-
+    db_connection = Connection()
     latest_rec = db_connection.get_all_records(room_identifier)[-1]
     dict_to_json = {"year":latest_rec.record_time.date.year,"month":latest_rec.record_time.date.month, "day": latest_rec.record_time.date.day, "hour":latest_rec.record_time.hour, "minute":latest_rec.record_time.minute,"second":latest_rec.record_time.second, "temperature": latest_rec.record_temp, "humidity": latest_rec.record_humidity, "pressure":latest_rec.record_press, "thermostat_state":latest_rec.device_termost, "dryer_state":latest_rec.device_dryer}
     return jsonify(dict_to_json)

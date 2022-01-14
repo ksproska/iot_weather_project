@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Button from "@mui/material/Button";
@@ -13,29 +12,41 @@ import Typography from "@mui/material/Typography";
 import Chart from "./Chart";
 import RoomCard from "../Home/RoomCard";
 
+import fetchRoomCurrent from "../../../utils/fetchRoomCurrent";
 import fetchRoomData from "../../../utils/fetchRoomData";
 
 import styles from "../../../styles/Main/Room/room.module.css";
 
-function Room({ rooms }) {
+function Room({ room }) {
 
-    const params = useParams();
-    let roomId = params.roomId;
+    const [roomData, setRoomData] = useState([]);
+    const [roomCurrent, setRoomCurrent] = useState([]);
 
-    console.log(roomId);
-
-    const [roomObj, setRoomObj] = useState(null);
-    const [timeInterval, setTimeInterval] = useState("day");
-
-    if (rooms != null) {
-        console.log(rooms);
-    }
+    // if (rooms != null) {
+    //     console.log(rooms);
+    // }
 
     useEffect(() => {
-        fetchRoomData(roomId).then(res =>
-            console.log(res)
-        ).catch(err => console.error(err));
-    }, [rooms, roomId]);
+
+        if (room != null) {
+            fetchRoomData(room['room_identifier']).then((res) => setRoomData(res))
+                .catch(err => console.error(err));
+
+            fetchRoomCurrent(room['room_identifier']).then((res) => {
+                let obj = {
+                    "room_identifier": room['room_identifier'],
+                    "display_name": room['display_name'],
+                    "temperature": res['temperature'],
+                    "humidity": res['humidity'],
+                    "pressure": res['pressure'],
+                    "thermostat_state": res['thermostat_state'],
+                    "dryer_state": res['dryer_state']
+                };
+                setRoomCurrent(obj);
+            }).catch(err => console.error(err));
+        }
+
+    }, [room]);
 
     return (
         <Box className={styles.room_main_box}>
@@ -82,6 +93,7 @@ function Room({ rooms }) {
                     </Stack>
                 </Grid>
             </Grid >
+            <RoomCard room={roomCurrent} />
         </Box >
     );
 }
