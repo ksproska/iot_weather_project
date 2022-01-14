@@ -104,11 +104,12 @@ class HumidityParams:
     def current_humidity(self, time: float, day: int, month: int):
         temp = self.temp_parameters.current_temperature(time, day, month)
         temp_amplitude = self.temp_parameters.month_amplitudes[month]
-        percentage = (temp - self.temp_parameters.min_temp(day, month)) / temp_amplitude
+        percentage = max(0, (temp - self.temp_parameters.min_temp(day, month))) / temp_amplitude
         sign = random.randint(0, 3) - 1
         fluctuation = random.random() * self.humidity_fluctuation
-        read = 1 - (self.max_humidity - self.min_humidity) * percentage + sign * fluctuation
-        return min(max(0, read), 1)
+        #read = 1 - (self.max_humidity - self.min_humidity) * percentage + sign * fluctuation
+        read = (percentage + random.uniform(self.min_humidity, self.max_humidity)) / 2 + sign * fluctuation
+        return min(max(0, (1 - read) * self.max_humidity), 1)
 
 
 class PressureParams:
