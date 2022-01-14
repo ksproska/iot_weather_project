@@ -21,10 +21,10 @@ class Room:
     MINUTE_1 = 0.016
     SECONDS_30 = 0.008
     SECONDS_15 = 0.004
-    SECONDS_5 = 0.00013
+    SECONDS_5 = 0.0013
 
     def __init__(self, thermometer: Thermometer, humidity_sensor: HumiditySensor, barometer: Barometer,
-                 receiver: Receiver, sender: Sender, temperature_delta=0.2, humidity_delta=0.05):
+                 receiver: Receiver, sender: Sender, temperature_delta=0.000001, humidity_delta=0.0000001):
         self.thermometer = thermometer
         self.humidity_sensor = humidity_sensor
         self.barometer = barometer
