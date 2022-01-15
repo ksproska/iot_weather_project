@@ -33,8 +33,8 @@ class Room:
         self.barometer = barometer
         self.is_thermostat_on = False
         self.is_dryer_on = False
-        self.current_temperature = thermometer.current_temperature(*time_now())
-        self.current_humidity = humidity_sensor.current_humidity(*time_now())
+        self.current_temperature = 20 # thermometer.current_temperature(*time_now())
+        self.current_humidity = 0.3 # humidity_sensor.current_humidity(*time_now())
         self.receiver = receiver
         self.sender = sender
         self.temperature_delta = temperature_delta
@@ -58,7 +58,7 @@ class Room:
         else:
             temp_change -= (self.temperature_delta * random.random())
 
-        self.current_temperature += temp_change
+        self.current_temperature = min(self.current_temperature + temp_change, 40)
 
     def __update_humidity(self):
         time, day, month = time_now()
@@ -130,7 +130,7 @@ def main():
     barom = Barometer(presParams)
     sender = Sender(SERVER_IP, ROOM_DATA)
     receiver = Receiver(SERVER_IP, DIRECTIVES)
-    room = Room(therm, humSensor, barom, receiver, sender)
+    room = Room(therm, humSensor, barom, receiver, sender, temperature_delta=0.00001, humidity_delta=0.00001)
     Thread(target=lambda: room.listening()).start()
     Thread(target=lambda: room.sending(delay=Room.SECONDS_15)).start()
     while True:
