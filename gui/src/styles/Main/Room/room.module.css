@@ -1,52 +1,6 @@
 .room_main_box {
-    padding-top: 20px;
+    padding: 20px;
     background-color: rgb(231, 231, 231);
-    height: calc(100vh - 100px);
-    width: 100%;
-}
-
-.chart_grid_container {
-    width: 90% !important;
-    /* margin-top: 20px; */
-    margin-left: 5%;
-    margin-right: 5%;
-    background-color: white;
-}
-
-.chart_container {
-    border: 1px solid black;
-    border-right: none;
-}
-
-.chart_button_column {
-    background-color: rgb(231, 231, 231);
-}
-
-.chart_button_container_selected {
-    height: 100%;
-    width: calc(100% + 1px);
-}
-
-.chart_button {
-    width: 100%;
-    border-radius: 10px 0px 0px 10px !important;
-    border-left: 2px solid black !important;
-    border-top: 1px solid black !important;
-    border-bottom: 2px solid black !important;
-    border-right: none !important;
-}
-
-.chart_button_selected {
-    background-color: white !important;
-    color: black !important;
-}
-
-.chart_button_dimmed {
-    background-color: grey !important;
-    color: black !important;
-}
-
-.chart_checkboxes_column {
-    border: 1px solid black;
-    border-left: none;
+    height: calc(100vh - 80px);
+    overflow: auto;
 }

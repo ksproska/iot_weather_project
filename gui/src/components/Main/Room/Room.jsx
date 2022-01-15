@@ -1,30 +1,29 @@
 import { useEffect, useState } from "react";
 
-import Box from '@mui/material/Box';
-import Button from "@mui/material/Button";
-import Checkbox from '@mui/material/Checkbox';
-import FormGroup from '@mui/material/FormGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
-import Typography from "@mui/material/Typography";
 
-import Chart from "./Chart";
-import RoomCard from "../Home/RoomCard";
+import ChartContainer from "./ChartContainer";
+import CurrentRoomInfo from "./CurrentRoomInfo";
+import HumidityAims from "./HumidityAims";
+import TempAims from "./TempAims";
 
 import fetchRoomCurrent from "../../../utils/fetchRoomCurrent";
 import fetchRoomData from "../../../utils/fetchRoomData";
 
 import styles from "../../../styles/Main/Room/room.module.css";
 
-function Room({ room }) {
+// TODO: thermostat czy termostat?
+// TODO: humidity castować mam ja na procenty, czy mam dostawać
+// TODO: usuwanko aimów
+// TODO: przyciski wykresiku działające
+// TODO: jak ma wyglądać edit i add nowych aimów
+// TODO: ogólnie wygląd (szczególnie kolorki i jakieś rameczki, co do responsywności to chyba za dużo zabawy jak na oddanie Nowakowi)
+// TODO: reload'ować dokument czy nie :thinking:
 
-    const [roomData, setRoomData] = useState([]);
-    const [roomCurrent, setRoomCurrent] = useState([]);
+function Room({ room, timestamp }) {
 
-    // if (rooms != null) {
-    //     console.log(rooms);
-    // }
+    const [roomData, setRoomData] = useState(null);
+    const [roomCurrent, setRoomCurrent] = useState(null);
 
     useEffect(() => {
 
@@ -49,52 +48,20 @@ function Room({ room }) {
     }, [room]);
 
     return (
-        <Box className={styles.room_main_box}>
-            <Grid container className={styles.chart_grid_container}>
-                <Grid item xs={2} className={styles.chart_button_column}>
-                    <Stack spacing={1}>
-                        <Box className={styles.chart_button_container_selected}>
-                            <Button variant="outlined" className={styles.chart_button + " " + styles.chart_button_selected}>
-                                Today
-                            </Button>
-                        </Box>
-                        <Box className={styles.chart_button_container}>
-                            <Button variant="outlined" className={styles.chart_button + " " + styles.chart_button_dimmed}>
-                                This week
-                            </Button>
-                        </Box>
-                        <Box className={styles.chart_button_container}>
-                            <Button variant="outlined" className={styles.chart_button + " " + styles.chart_button_dimmed}>
-                                This month
-                            </Button>
-                        </Box>
-                    </Stack>
-                </Grid>
-                <Grid item xs={8} className={styles.chart_container}>
-                    <Chart />
-                </Grid>
-                <Grid item xs={2} className={styles.chart_checkboxes_column}>
-                    <Stack>
-                        <Typography variant="h6">
-                            Sensors
-                        </Typography>
-                        <FormGroup>
-                            <FormControlLabel control={<Checkbox defaultChecked />} label="Temperature" />
-                            <FormControlLabel control={<Checkbox />} label="Humidity" />
-                            <FormControlLabel control={<Checkbox />} label="Pressure" />
-                        </FormGroup>
-                        <Typography variant="h6">
-                            Devices
-                        </Typography>
-                        <FormGroup>
-                            <FormControlLabel control={<Checkbox />} label="Thermostat" />
-                            <FormControlLabel control={<Checkbox />} label="Dryer" />
-                        </FormGroup>
-                    </Stack>
-                </Grid>
-            </Grid >
-            <RoomCard room={roomCurrent} />
-        </Box >
+        <Grid item container className={styles.room_main_box} columnSpacing={2}>
+            <Grid item xs={12} xl={10}>
+                {roomCurrent != null ? <ChartContainer roomName={roomCurrent['display_name']} /> : <div>LOADING</div>}
+            </Grid>
+            <Grid item xs={4} xl={2}>
+                {roomCurrent != null ? <CurrentRoomInfo roomInfo={roomCurrent} /> : <div>LOADING</div>}
+            </Grid>
+            <Grid item xs={4} xl={6}>
+                <TempAims />
+            </Grid>
+            <Grid item xs={4} xl={6}>
+                <HumidityAims />
+            </Grid>
+        </Grid >
     );
 }
 

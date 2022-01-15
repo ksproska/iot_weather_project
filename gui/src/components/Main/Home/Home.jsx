@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 
 import RoomCard from "./RoomCard";
@@ -12,14 +13,13 @@ function Home({ rooms }) {
 
     const [roomsCurrent, setRoomsCurrent] = useState([]);
 
-    useEffect(async () => {
+    useEffect(() => {
         let roomData = [];
 
-        if (rooms != null) {
-
+        async function fetchCurrent() {
             await Promise.all(rooms['rooms'].map(async (room) => {
                 let result = await fetchRoomCurrent(room['room_identifier']);
-                if (result != undefined) {
+                if (result !== undefined) {
                     roomData.push({
                         "room_identifier": room["room_identifier"],
                         "display_name": room["display_name"],
@@ -33,12 +33,16 @@ function Home({ rooms }) {
             })).then(() => setRoomsCurrent(roomData));
         }
 
+        if (rooms != null) {
+            fetchCurrent();
+        }
+
     }, [rooms]);
 
 
     return (
         <>
-            {rooms === null ? <div>ERR</div> :
+            {rooms === null ? <Container>Loading...</Container> :
                 <Grid container className={styles.home_container}>
                     <Grid item xs={2} />
                     <Grid container item xs={8} className={styles.room_cards_container}>

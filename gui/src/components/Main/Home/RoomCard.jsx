@@ -16,13 +16,13 @@ function RoomCard({ room }) {
             <CardHeader title={room["display_name"]} />
             <CardContent>
                 <Typography>
-                    Temperature: {room['temperature']}
+                    Temperature: {room['temperature']} °C
                 </Typography>
                 <Typography>
-                    Humidity: {room['humidity']}
+                    Humidity: {room['humidity']} %
                 </Typography>
                 <Typography>
-                    Pressure: {room['pressure']}
+                    Pressure: {room['pressure']} hPa
                 </Typography>
                 <Typography>
                     Thermostat: {room['thermostat_state'] === true ? "ON" : "OFF"}

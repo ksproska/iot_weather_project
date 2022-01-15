@@ -1,0 +1,10 @@
+.room_info_container {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.table_head_cell {
+    background-color: #89DAFF;
+}
