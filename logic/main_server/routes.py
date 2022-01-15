@@ -50,7 +50,7 @@ def get_current_room_state(room_identifier):
     # Get the state for the latest record
     db_connection = Connection()
 
-    latest_rec = db_connection.get_all_records(room_identifier)[-1]
+    latest_rec = db_connection.newest_record(room_identifier)
     dict_to_json = {"year":latest_rec.record_time.date.year,"month":latest_rec.record_time.date.month, "day": latest_rec.record_time.date.day, "hour":latest_rec.record_time.hour, "minute":latest_rec.record_time.minute,"second":latest_rec.record_time.second, "temperature": latest_rec.record_temp, "humidity": latest_rec.record_humidity, "pressure":latest_rec.record_press, "thermostat_state":latest_rec.device_termost, "dryer_state":latest_rec.device_dryer}
     db_connection.close()
     return jsonify(dict_to_json)
