@@ -1,6 +1,6 @@
 import sys
 # sys.path.append('path')
-SERVER_IP = 'localhost'
+SERVER_IP = '25.33.38.163'
 from logic.environment.simulation_objects import Thermometer, HumiditySensor, Barometer, PressureParams, TemperatureParams, HumidityParams
 from logic.communication.receiver import Receiver
 from logic.communication.sender import Sender
