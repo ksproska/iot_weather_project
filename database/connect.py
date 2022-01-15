@@ -173,6 +173,15 @@ class Connection:
         return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' '
                                               f'ORDER BY record_time {order}')
 
+    def newest_record(self, room_name):
+        """
+        :param room_name: name of a room for WHERE condition
+        :param newest_to_oldest: sorting order
+        :return: list[Record] sorted according to newest_to_oldest
+        """
+        return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' '
+                                              f'ORDER BY record_time DESC')[0]
+
     # getters for all for each table ___________________________________________________________________________________
     @property
     def all_preferences_temperature(self):
