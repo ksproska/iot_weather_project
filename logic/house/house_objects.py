@@ -1,3 +1,6 @@
+import sys
+# sys.path.append('path')
+SERVER_IP = 'localhost'
 from logic.environment.simulation_objects import Thermometer, HumiditySensor, Barometer, PressureParams, TemperatureParams, HumidityParams
 from logic.communication.receiver import Receiver
 from logic.communication.sender import Sender
@@ -11,8 +14,8 @@ from time import sleep
 
 
 def time_now(month=1):
-    # return normal_time()
-    return simulated_time(month=month)
+    return normal_time()
+    # return simulated_time(month=month)
 
 
 class Room:
@@ -110,6 +113,7 @@ class Room:
         hum = round(self.current_humidity, 2)
         pres = self.barometer.current_pressure(time, day, month)
         self.sender.publish(f"{self.name}#{temp}#{hum}#{pres}")
+        print(f'{self.name}\n{temp}C\n{hum}%\n{pres}hPa\n')
 
     def start(self):
         while True:
@@ -123,9 +127,9 @@ def main():
     therm = Thermometer(tempParams)
     humSensor = HumiditySensor(humParams)
     barom = Barometer(presParams)
-    sender = Sender('localhost', ROOM_DATA)  # ip do zmiany
-    receiver = Receiver('localhost', DIRECTIVES)  # ip do zmiany
-    room = Room(therm, humSensor, barom, receiver, sender, temperature_delta=0.07, humidity_delta=0.02)
+    sender = Sender(SERVER_IP, ROOM_DATA)
+    receiver = Receiver(SERVER_IP, DIRECTIVES)
+    room = Room(therm, humSensor, barom, receiver, sender)
     Thread(target=lambda: room.listening()).start()
     Thread(target=lambda: room.sending(delay=Room.SECONDS_15)).start()
     while True:
