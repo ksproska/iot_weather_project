@@ -15,7 +15,7 @@ config = json.load(json_file)
 json_file.close()
 
 list_of_rooms = config['rooms']
-db_connection = Connection()
+
 
 @routes.route("/")
 def index():
@@ -28,6 +28,7 @@ def get_room_data():
 @routes.route(r"/<room_identifier>/data")
 def get_data_for_room(room_identifier):
     # Get data from database
+    db_connection = Connection()
     list_of_records = db_connection.get_all_records(room_identifier)
     dict_to_json = {"day":[], "week":[], "month":[]}
     for rec in list_of_records:
@@ -40,21 +41,25 @@ def get_data_for_room(room_identifier):
             dict_to_json["week"].append({"year":rec.record_time.date.year,"month":rec.record_time.date.month, "day": rec.record_time.date.day, "hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
         if (datetime.now() - rec.record_time).days < rec.record_time.date.day:
             dict_to_json["month"].append({"year":rec.record_time.date.year,"month":rec.record_time.date.month, "day": rec.record_time.date.day, "hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
-
+    db_connection.close()
     return jsonify(dict_to_json)
 
 @routes.route(r"/<room_identifier>/current")
 def get_current_room_state(room_identifier):
 
     # Get the state for the latest record
+    db_connection = Connection()
 
     latest_rec = db_connection.get_all_records(room_identifier)[-1]
     dict_to_json = {"year":latest_rec.record_time.date.year,"month":latest_rec.record_time.date.month, "day": latest_rec.record_time.date.day, "hour":latest_rec.record_time.hour, "minute":latest_rec.record_time.minute,"second":latest_rec.record_time.second, "temperature": latest_rec.record_temp, "humidity": latest_rec.record_humidity, "pressure":latest_rec.record_press, "thermostat_state":latest_rec.device_termost, "dryer_state":latest_rec.device_dryer}
+    db_connection.close()
     return jsonify(dict_to_json)
 
 
 @routes.route(r"/<room_identifier>/aims")
 def get_room_aims(room_identifier):
+    db_connection = Connection()
+
     temp_prefs = db_connection.get_all_scheduled_preferences_temperature(room_identifier)
     hum_prefs = db_connection.get_all_scheduled_preferences_humidity(room_identifier)
     dict_to_json = {"def_temp":db_connection.default_preference_temperature(room_identifier), "def_hum":db_connection.default_preference_humidity(room_identifier), "temp_prefs": [], "hum_prefs":[]}
@@ -63,30 +68,43 @@ def get_room_aims(room_identifier):
     for hum_pref_rec in hum_prefs:
         dict_to_json["temp_prefs"].append({"time_start":str(hum_pref_rec.time_start)[0:-3], "time_end":str(hum_pref_rec.time_end)[0:-3], "temp":hum_pref_rec.value})
     
+    db_connection.close()
     return jsonify(dict_to_json)
 
 @routes.route(r"/<room_identifier>/set_def_hum")
 def set_default_humidity(room_identifier):
+    db_connection = Connection()
+    db_connection.close()
     pass
 
 @routes.route(r"/<room_identifier>/set_def_temp")
 def set_default_temperature(room_identifier):
+    db_connection = Connection()
+    db_connection.close()
     pass
 
 @routes.route(r"/<room_identifier>/delete_temp_schedule")
 def delete_temp_schedule(room_identifier):
+    db_connection = Connection()
+    db_connection.close()
     pass
 
 @routes.route(r"/<room_identifier>/delete_hum_schedule")
 def delete_hum_schedule(room_identifier):
+    db_connection = Connection()
+    db_connection.close()
     pass
 
 @routes.route(r"/<room_identifier>/add_temp_schedule")
 def add_temp_schedule(room_identifier):
+    db_connection = Connection()
+    db_connection.close()
     pass
 
 @routes.route(r"/<room_identifier>/add_hum_schedule")
 def add_hum_schedule(room_identifier):
+    db_connection = Connection()
+    db_connection.close()
     pass
 
 @routes.route("/bathroom/aims")
