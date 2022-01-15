@@ -33,8 +33,8 @@ class Room:
         self.barometer = barometer
         self.is_thermostat_on = False
         self.is_dryer_on = False
-        self.current_temperature = thermometer.current_temperature(*time_now())
-        self.current_humidity = humidity_sensor.current_humidity(*time_now())
+        self.current_temperature = 20 # thermometer.current_temperature(*time_now())
+        self.current_humidity = 0.3 # humidity_sensor.current_humidity(*time_now())
         self.receiver = receiver
         self.sender = sender
         self.temperature_delta = temperature_delta
@@ -56,9 +56,9 @@ class Room:
         elif self.current_temperature < temp:
             temp_change = (self.temperature_delta * random.random())
         else:
-            temp_change -= (self.temperature_delta * random.random())
+            temp_change = -1 * (self.temperature_delta * random.random())
 
-        self.current_temperature += temp_change
+        self.current_temperature = min(self.current_temperature + temp_change, 40)
 
     def __update_humidity(self):
         time, day, month = time_now()
@@ -67,12 +67,13 @@ class Room:
 
         if self.is_dryer_on:
             humidity_change -= (self.humidity_delta * random.random())
+            self.current_humidity = min(max(self.current_humidity - humidity_change, 0), 1)
         elif self.current_humidity < humidity:
-            humidity_change += (self.humidity_delta * random.random())
+            humidity_change = (self.humidity_delta * random.random())
+            self.current_humidity = min(max(self.current_humidity + humidity_change, 0), 1)
         else:
             humidity -= (self.humidity_delta * random.random())
-
-        self.current_humidity += min(max(humidity_change, 0), 1)
+            self.current_humidity = min(max(self.current_humidity - humidity_change, 0), 1)
 
     def update_all_parameters(self):
         self.__update_humidity()
@@ -113,7 +114,7 @@ class Room:
         hum = round(self.current_humidity, 2)
         pres = self.barometer.current_pressure(time, day, month)
         self.sender.publish(f"{self.name}#{temp}#{hum}#{pres}")
-        print(f'{self.name}\n{temp}C\n{hum}%\n{pres}hPa\n')
+        print(f'{self.name}\n{temp}C\n{hum * 100}%\n{pres}hPa')
 
     def start(self):
         while True:
@@ -129,7 +130,7 @@ def main():
     barom = Barometer(presParams)
     sender = Sender(SERVER_IP, ROOM_DATA)
     receiver = Receiver(SERVER_IP, DIRECTIVES)
-    room = Room(therm, humSensor, barom, receiver, sender)
+    room = Room(therm, humSensor, barom, receiver, sender, temperature_delta=0.00001, humidity_delta=0.00001)
     Thread(target=lambda: room.listening()).start()
     Thread(target=lambda: room.sending(delay=Room.SECONDS_15)).start()
     while True:

@@ -1,0 +1,25 @@
+.temp_aims_container {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.temp_aims_button {
+    width: 100%;
+}
+
+.temp_aims_add_button {
+    height: 50%;
+    background-color: #89ffce !important;
+    color: black !important;
+}
+
+.temp_aims_edit_button {
+    background-color: #DBB1BC !important;
+    color: black !important;
+}
+
+.table_head_cell {
+    background-color: #89DAFF;
+}

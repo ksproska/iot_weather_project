@@ -6,8 +6,9 @@ class Sender:
         self.broker = broker
         self.identifier = identifier
         self.client = mqtt.Client()
-        self.client.tls_set('./ca.crt')
-        self.client.tls_insecure_set(True)
+        self.client.username_pw_set(username='tech_user', password='1234')
+        # self.client.tls_set('./ca.crt')
+        # self.client.tls_insecure_set(True)
 
 
     def connect_to_broker(self):

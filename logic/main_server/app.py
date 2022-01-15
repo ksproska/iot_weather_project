@@ -53,4 +53,3 @@ rec_thread.start()
 
 app = Flask(__name__)
 app.register_blueprint(routes)
-

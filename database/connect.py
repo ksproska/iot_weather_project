@@ -29,8 +29,8 @@ def all_commands_from_file(filename):
 
 class Connection:
     PROJECT_PATH = '/home/pi/Desktop/proj/iot_weather_project/'
-    DEFAULT_TEMPERATURE = 12
-    DEFAULT_HUMIDITY = 30
+    DEFAULT_TEMPERATURE = 20
+    DEFAULT_HUMIDITY = 0.3
     # PROJECT_PATH = 'C:/python/iot_weather_project/'
 
     def __init__(self, database_filename=f"{PROJECT_PATH}weather_project.db"):
@@ -172,6 +172,15 @@ class Connection:
             order = 'ASC'
         return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' '
                                               f'ORDER BY record_time {order}')
+
+    def newest_record(self, room_name):
+        """
+        :param room_name: name of a room for WHERE condition
+        :param newest_to_oldest: sorting order
+        :return: list[Record] sorted according to newest_to_oldest
+        """
+        return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' '
+                                              f'ORDER BY record_time DESC')[0]
 
     # getters for all for each table ___________________________________________________________________________________
     @property

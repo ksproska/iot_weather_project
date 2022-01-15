@@ -1,6 +1,6 @@
 from database.connect import Connection
 from flask import Blueprint, jsonify, current_app
-from communication import receiver, sender, constants
+from logic.communication import receiver, sender, constants
 from datetime import datetime
 import json
 
