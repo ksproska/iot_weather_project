@@ -1,8 +1,8 @@
 {
     "rooms": [
       {
-        "room_identifier": "living_room",
-        "display_name" : "Living room"
+        "room_identifier": "bedroom",
+        "display_name" : "Bedroom"
       },
       {
         "room_identifier": "bathroom",
