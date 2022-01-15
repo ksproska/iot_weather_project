@@ -13,6 +13,8 @@ function Home({ rooms }) {
 
     const [roomsCurrent, setRoomsCurrent] = useState([]);
 
+    console.log(rooms);
+
     useEffect(() => {
         let roomData = [];
 

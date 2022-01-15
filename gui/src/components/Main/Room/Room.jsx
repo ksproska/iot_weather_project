@@ -12,13 +12,14 @@ import fetchRoomData from "../../../utils/fetchRoomData";
 
 import styles from "../../../styles/Main/Room/room.module.css";
 
-// TODO: thermostat czy termostat?
-// TODO: humidity castować mam ja na procenty, czy mam dostawać
 // TODO: usuwanko aimów
-// TODO: przyciski wykresiku działające
 // TODO: jak ma wyglądać edit i add nowych aimów
 // TODO: ogólnie wygląd (szczególnie kolorki i jakieś rameczki, co do responsywności to chyba za dużo zabawy jak na oddanie Nowakowi)
 // TODO: reload'ować dokument czy nie :thinking:
+// TODO: humidity castować mam ja na procenty, czy mam dostawać
+// TODO: potrzebuję danych przykładowych dla testowanka
+
+// TODO: CONFIRMED - Devices przy włączeniu mają nakładać punkty na ten wykres liniowy (jakiś szary-OFF i normalny-ON)
 
 function Room({ room, timestamp }) {
 
