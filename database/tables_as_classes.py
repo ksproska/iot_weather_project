@@ -36,7 +36,7 @@ class AddableToDatabase:
 class Record(AddableToDatabase):
     def __init__(self, record_time: datetime, room_name, record_temp, record_humidity,
                  record_press, device_termost, device_dryer):
-        self.record_time: datetime = datetime.strptime(record_time, '%Y-%m-%d %H:%M:%S.%f')
+        self.record_time: datetime = record_time
         self.room_name = room_name
         self.record_temp = record_temp
         self.record_humidity = record_humidity
