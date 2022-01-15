@@ -66,7 +66,7 @@ class Preference(AddableToDatabase):
         self.weight = weight
         self.room_name = room_name
         self.value = value
-        self.preference_timestamp: datetime = datetime.strptime(preference_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+        self.preference_timestamp: datetime = preference_timestamp
         self.time_start = time_start
         self.time_end = time_end
 
