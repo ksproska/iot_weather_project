@@ -67,12 +67,13 @@ class Room:
 
         if self.is_dryer_on:
             humidity_change -= (self.humidity_delta * random.random())
+            self.current_humidity -= min(max(abs(humidity_change), 0), 1)
         elif self.current_humidity < humidity:
             humidity_change += (self.humidity_delta * random.random())
+            self.current_humidity += min(max(humidity_change, 0), 1)
         else:
             humidity -= (self.humidity_delta * random.random())
-
-        self.current_humidity += min(max(humidity_change, 0), 1)
+            self.current_humidity -= min(max(abs(humidity_change), 0), 1)
 
     def update_all_parameters(self):
         self.__update_humidity()
@@ -113,7 +114,7 @@ class Room:
         hum = round(self.current_humidity, 2)
         pres = self.barometer.current_pressure(time, day, month)
         self.sender.publish(f"{self.name}#{temp}#{hum}#{pres}")
-        print(f'{self.name}\n{temp}C\n{hum}%\n{pres}hPa\n')
+        print(f'{self.name}\n{temp}C\n{hum * 100}%\n{pres}hPa')
 
     def start(self):
         while True:
