@@ -23,7 +23,7 @@ def index():
 
 @routes.route("/roomnames")
 def get_room_data():
-    return config
+    return jsonify(config)
 
 @routes.route(r"/<room_identifier>/data")
 def get_data_for_room(room_identifier):
@@ -36,11 +36,11 @@ def get_data_for_room(room_identifier):
         # Check where record belongs and add it to proper label
 
         if (datetime.now() - rec.record_time).days < 1:
-            dict_to_json["day"].append({"year":rec.record_time.date.year,"month":rec.record_time.date.month, "day": rec.record_time.date.day, "hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
+            dict_to_json["day"].append({"year":rec.record_time.year,"month":rec.record_time.month, "day": rec.record_time.day, "hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
         if (datetime.now() - rec.record_time).days < datetime.today().weekday():
-            dict_to_json["week"].append({"year":rec.record_time.date.year,"month":rec.record_time.date.month, "day": rec.record_time.date.day, "hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
-        if (datetime.now() - rec.record_time).days < rec.record_time.date.day:
-            dict_to_json["month"].append({"year":rec.record_time.date.year,"month":rec.record_time.date.month, "day": rec.record_time.date.day, "hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
+            dict_to_json["week"].append({"year":rec.record_time.year,"month":rec.record_time.month, "day": rec.record_time.day, "hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
+        if (datetime.now() - rec.record_time).days < rec.record_time.day:
+            dict_to_json["month"].append({"year":rec.record_time.year,"month":rec.record_time.month, "day": rec.record_time.day, "hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
     db_connection.close()
     return jsonify(dict_to_json)
 
@@ -51,7 +51,7 @@ def get_current_room_state(room_identifier):
     db_connection = Connection()
 
     latest_rec = db_connection.get_all_records(room_identifier)[-1]
-    dict_to_json = {"year":latest_rec.record_time.date.year,"month":latest_rec.record_time.date.month, "day": latest_rec.record_time.date.day, "hour":latest_rec.record_time.hour, "minute":latest_rec.record_time.minute,"second":latest_rec.record_time.second, "temperature": latest_rec.record_temp, "humidity": latest_rec.record_humidity, "pressure":latest_rec.record_press, "thermostat_state":latest_rec.device_termost, "dryer_state":latest_rec.device_dryer}
+    dict_to_json = {"year":latest_rec.record_time.year,"month":latest_rec.record_time.month, "day": latest_rec.record_time.day, "hour":latest_rec.record_time.hour, "minute":latest_rec.record_time.minute,"second":latest_rec.record_time.second, "temperature": latest_rec.record_temp, "humidity": latest_rec.record_humidity, "pressure":latest_rec.record_press, "thermostat_state":latest_rec.device_termost, "dryer_state":latest_rec.device_dryer}
     db_connection.close()
     return jsonify(dict_to_json)
 
@@ -106,25 +106,4 @@ def add_hum_schedule(room_identifier):
     db_connection = Connection()
     db_connection.close()
     pass
-
-@routes.route("/bathroom/aims")
-def get_bth_aims():
-    def_tmp_and_hum = []
-    temp_prefs = []
-    hum_prefs = []
-    dict_to_json = {"def_temp":24.56, "def_hum":60.45, "temp_prefs": [], "hum_prefs":[]}
-    for tmp_pref_rec in temp_prefs:
-        dict_to_json["temp_prefs"].append({"time_start":"9:00", "time_end":"18:00", "temp":24.7})
-    for hum_pref_rec in hum_prefs:
-        dict_to_json["hum_prefs"].append({"time_start":"9:00", "time_end":"18:00", "hum":65.7})
-    
-    return jsonify(dict_to_json)
-
-
-@routes.route("/bathroom/current")
-def get_current_bth_state():
-    # Get the state for the latest record
-    latest_rec = []
-    dict_to_json = {"temperature": 23.18, "humidity": 56.76, "pressure":1100, "thermostat_state":True, "dryer_state":False}
-    return jsonify(dict_to_json)
 
