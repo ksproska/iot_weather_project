@@ -56,7 +56,7 @@ class Room:
         elif self.current_temperature < temp:
             temp_change = (self.temperature_delta * random.random())
         else:
-            temp_change -= (self.temperature_delta * random.random())
+            temp_change = -1 * (self.temperature_delta * random.random())
 
         self.current_temperature = min(self.current_temperature + temp_change, 40)
 
@@ -67,13 +67,13 @@ class Room:
 
         if self.is_dryer_on:
             humidity_change -= (self.humidity_delta * random.random())
-            self.current_humidity -= min(max(abs(humidity_change), 0), 1)
+            self.current_humidity = min(max(self.current_humidity - humidity_change, 0), 1)
         elif self.current_humidity < humidity:
-            humidity_change += (self.humidity_delta * random.random())
-            self.current_humidity += min(max(humidity_change, 0), 1)
+            humidity_change = (self.humidity_delta * random.random())
+            self.current_humidity = min(max(self.current_humidity + humidity_change, 0), 1)
         else:
             humidity -= (self.humidity_delta * random.random())
-            self.current_humidity -= min(max(abs(humidity_change), 0), 1)
+            self.current_humidity = min(max(self.current_humidity - humidity_change, 0), 1)
 
     def update_all_parameters(self):
         self.__update_humidity()
