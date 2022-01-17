@@ -1,8 +1,11 @@
+from crypt import methods
 from database.connect import Connection
-from flask import Blueprint, jsonify, current_app
+from flask import Blueprint, jsonify, current_app, request
 from communication import receiver, sender, constants
 from datetime import datetime
 import json
+
+from database.tables_as_classes import Preference_humidity, Preference_temperature
 
 routes = Blueprint('routes', __name__)
 broker = "localhost"
@@ -71,60 +74,80 @@ def get_room_aims(room_identifier):
     db_connection.close()
     return jsonify(dict_to_json)
 
-@routes.route(r"/<room_identifier>/set_def_hum")
+@routes.route(r"/<room_identifier>/set_def_hum", methods = ["POST"])
 def set_default_humidity(room_identifier):
     db_connection = Connection()
+    humidity = float(request.json['def_humidity'])
+    db_connection.add_object(Preference_humidity.as_default(humidity, room_identifier))
     db_connection.close()
-    pass
+    return jsonify({"status":"OK"}), 200
 
 @routes.route(r"/<room_identifier>/set_def_temp")
 def set_default_temperature(room_identifier):
     db_connection = Connection()
+    temperature = float(request.json['def_temperature'])
+    db_connection.add_object(Preference_temperature.as_default(temperature, room_identifier))
     db_connection.close()
-    pass
+    return jsonify({"status":"OK"}), 200
 
 @routes.route(r"/<room_identifier>/delete_temp_schedule")
 def delete_temp_schedule(room_identifier):
     db_connection = Connection()
+    time_start = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+    time_end = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+
     db_connection.close()
-    pass
+    return jsonify({"status":"Deleted"}), 200
 
 @routes.route(r"/<room_identifier>/delete_hum_schedule")
 def delete_hum_schedule(room_identifier):
     db_connection = Connection()
+    time_start = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+    time_end = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+
+
     db_connection.close()
-    pass
+    return jsonify({"status":"Deleted"}), 200
 
 @routes.route(r"/<room_identifier>/add_temp_schedule")
 def add_temp_schedule(room_identifier):
     db_connection = Connection()
+    time_start = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+    time_end = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+    if (time_start == time_end):
+        return jsonify({"message":"This schedule is empty"}), 400
+    value = float(request.json['value'])
+    temp_schedules = db_connection.get_all_scheduled_preferences_temperature(room_identifier)
+    for sch in temp_schedules:
+        if sch.time_start < sch.time_end:
+            if sch.time_start <= time_start and sch.time_end >= time_start or sch.time_start <= time_end and sch.time_end >= time_end:
+                return jsonify({"message":"This schedule is in conflict with another schedule"}), 400
+        else:
+            if sch.time_start <= time_start or sch.time_end >= time_start or sch.time_start <= time_end or sch.time_end >= time_end:
+                return jsonify({"message":"This schedule is in conflict with another schedule"}), 400
+    db_connection.add_object(Preference_temperature.as_schedule(value, room_identifier, time_start, time_end))
     db_connection.close()
-    pass
+    return jsonify({"status":"Schedule added"}), 200
+    
 
 @routes.route(r"/<room_identifier>/add_hum_schedule")
 def add_hum_schedule(room_identifier):
     db_connection = Connection()
+    time_start = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+    time_end = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+    if (time_start == time_end):
+        return jsonify({"message":"This schedule is empty"}), 400
+    value = float(request.json['value'])
+    temp_schedules = db_connection.get_all_scheduled_preferences_humidity(room_identifier)
+    for sch in temp_schedules:
+        if sch.time_start < sch.time_end:
+            if sch.time_start <= time_start and sch.time_end >= time_start or sch.time_start <= time_end and sch.time_end >= time_end:
+                return jsonify({"message":"This schedule is in conflict with another schedule"}), 400
+        else:
+            if sch.time_start <= time_start or sch.time_end >= time_start or sch.time_start <= time_end or sch.time_end >= time_end:
+                return jsonify({"message":"This schedule is in conflict with another schedule"}), 400
+    db_connection.add_object(Preference_humidity.as_schedule(value, room_identifier, time_start, time_end))
     db_connection.close()
-    pass
+    return jsonify({"status":"Schedule added"}), 200
 
-@routes.route("/bathroom/aims")
-def get_bth_aims():
-    def_tmp_and_hum = []
-    temp_prefs = []
-    hum_prefs = []
-    dict_to_json = {"def_temp":24.56, "def_hum":60.45, "temp_prefs": [], "hum_prefs":[]}
-    for tmp_pref_rec in temp_prefs:
-        dict_to_json["temp_prefs"].append({"time_start":"9:00", "time_end":"18:00", "temp":24.7})
-    for hum_pref_rec in hum_prefs:
-        dict_to_json["hum_prefs"].append({"time_start":"9:00", "time_end":"18:00", "hum":65.7})
-    
-    return jsonify(dict_to_json)
-
-
-@routes.route("/bathroom/current")
-def get_current_bth_state():
-    # Get the state for the latest record
-    latest_rec = []
-    dict_to_json = {"temperature": 23.18, "humidity": 56.76, "pressure":1100, "thermostat_state":True, "dryer_state":False}
-    return jsonify(dict_to_json)
 
