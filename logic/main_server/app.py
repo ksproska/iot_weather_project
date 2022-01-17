@@ -3,10 +3,12 @@ import sys
 sys.path.append('/home/pi/Desktop/proj/iot_weather_project')
 from database.tables_as_classes import Preference_temperature, Record
 from flask import Flask
-from routes import routes, sender_api, receiver_api, db_connection
+from routes import routes, sender_api, receiver_api
 from database.connect import Connection
 import threading
 
+app = Flask(__name__)
+app.register_blueprint(routes)
 
 sender_api.connect_to_broker()
 
@@ -16,6 +18,7 @@ def process_message(client, userdata, message):
     message_decoded = str(message.payload.decode("utf-8")).split("#")
     if len(message_decoded) == 4:
         room_id = message_decoded[0]
+        print(message_decoded)
         temperature = float(message_decoded[1])
         humidity = float(message_decoded[2])
         pressure = int(message_decoded[3])
@@ -50,6 +53,3 @@ def run_receiver():
 
 rec_thread = threading.Thread(target=run_receiver)
 rec_thread.start()
-
-app = Flask(__name__)
-app.register_blueprint(routes)
