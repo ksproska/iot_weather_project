@@ -21,37 +21,44 @@ import styles from "../../../styles/Main/Room/room.module.css";
 
 // TODO: CONFIRMED - Devices przy włączeniu mają nakładać punkty na ten wykres liniowy (jakiś szary-OFF i normalny-ON)
 
-function Room({ room, timestamp }) {
+function Room({ room }) {
 
     const [roomData, setRoomData] = useState(null);
     const [roomCurrent, setRoomCurrent] = useState(null);
 
+    // console.log(roomData);
+
     useEffect(() => {
 
+        let isSubscribed = true;
+
         if (room != null) {
-            fetchRoomData(room['room_identifier']).then((res) => setRoomData(res))
+            fetchRoomData(room['room_identifier']).then(isSubscribed ? (res) => setRoomData(res) : null)
                 .catch(err => console.error(err));
 
-            fetchRoomCurrent(room['room_identifier']).then((res) => {
-                let obj = {
-                    "room_identifier": room['room_identifier'],
-                    "display_name": room['display_name'],
-                    "temperature": res['temperature'],
-                    "humidity": res['humidity'],
-                    "pressure": res['pressure'],
-                    "thermostat_state": res['thermostat_state'],
-                    "dryer_state": res['dryer_state']
-                };
-                setRoomCurrent(obj);
-            }).catch(err => console.error(err));
+            if (isSubscribed) {
+                fetchRoomCurrent(room['room_identifier']).then(isSubscribed ? ((res) => {
+                    let obj = {
+                        "room_identifier": room['room_identifier'],
+                        "display_name": room['display_name'],
+                        "temperature": res['temperature'],
+                        "humidity": res['humidity'],
+                        "pressure": res['pressure'],
+                        "thermostat_state": res['thermostat_state'],
+                        "dryer_state": res['dryer_state']
+                    };
+                    setRoomCurrent(obj);
+                }) : null).catch(err => console.error(err));
+            }
         }
 
+        return () => (isSubscribed = false);
     }, [room]);
 
     return (
         <Grid item container className={styles.room_main_box} columnSpacing={2}>
             <Grid item xs={12} xl={10}>
-                {roomCurrent != null ? <ChartContainer roomName={roomCurrent['display_name']} /> : <div>LOADING</div>}
+                {roomCurrent != null ? <ChartContainer roomName={roomCurrent['display_name']} data={roomData} /> : <div>LOADING</div>}
             </Grid>
             <Grid item xs={4} xl={2}>
                 {roomCurrent != null ? <CurrentRoomInfo roomInfo={roomCurrent} /> : <div>LOADING</div>}
