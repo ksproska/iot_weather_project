@@ -44,8 +44,8 @@ class Connection:
         self.init_tables_if_not_exist()
 
     def register_room(self, room_name):
-        command_temperature = f'SELECT COUNT(*) FROM {Preference_temperature.__name__} WHERE room_name=\'{room_name}\';'
-        command_humidity = f'SELECT COUNT(*) FROM {Preference_humidity.__name__} WHERE room_name=\'{room_name}\';'
+        command_temperature = f'SELECT COUNT(*) FROM {Preference_temperature.__name__} WHERE room_name=\'{room_name}\' AND weight={Preference_temperature.WEIGHT_DEFAULT};'
+        command_humidity = f'SELECT COUNT(*) FROM {Preference_humidity.__name__} WHERE room_name=\'{room_name}\' AND weight={Preference_humidity.WEIGHT_DEFAULT};'
         count_temperature = self.execute(command_temperature).fetchone()[0]
         count_humidity = self.execute(command_humidity).fetchone()[0]
         if count_temperature == 0:
@@ -160,6 +160,18 @@ class Connection:
                                                     f'AND weight = {class_type.WEIGHT_SCHEDULE} '
                                                   f'ORDER BY time_start ASC')
 
+    def __get_all_default_preferences(self, class_type, room_name):
+        """
+            List of objects of class class_type, with weight SCHEDULE, sorted by time_start
+
+            :param class_type: class type inheriting from Preference
+            :param room_name: name of a room for WHERE condition
+            :return: list[class_type]
+        """
+        return self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
+                                                    f'AND weight = {class_type.WEIGHT_DEFAULT} '
+                                                  f'ORDER BY time_start ASC')
+
     def get_all_records(self, room_name, newest_to_oldest=True):
         """
         :param room_name: name of a room for WHERE condition
@@ -195,12 +207,24 @@ class Connection:
     def all_records(self):
         return self.__get_all_objects(Record)
 
+    def delete_preference(self, preference: Preference):
+        command = f"DELETE FROM {preference.__class__.__name__} WHERE preference_timestamp=\'{preference.preference_timestamp}\'"
+        self.execute(command)
+        self.commit()
+
     # getters for scheduled preferences ________________________________________________________________________________
     def get_all_scheduled_preferences_temperature(self, room_name):
         return self.__get_all_scheduled_preferences(Preference_temperature, room_name)
 
     def get_all_scheduled_preferences_humidity(self, room_name):
         return self.__get_all_scheduled_preferences(Preference_humidity, room_name)
+
+    # getters for default preferences __________________________________________________________________________________
+    def get_all_default_preferences_temperature(self, room_name):
+        return self.__get_all_default_preferences(Preference_temperature, room_name)
+
+    def get_all_default_preferences_humidity(self, room_name):
+        return self.__get_all_default_preferences(Preference_humidity, room_name)
 
     # different preferences value getters ______________________________________________________________________________
     def current_preference_temperature(self, room_name):
