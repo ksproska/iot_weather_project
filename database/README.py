@@ -78,8 +78,23 @@ class DBTest:
             connection.add_object(Preference_humidity.as_temporary(77, room_name))
         connection.close()
 
+    @classmethod
+    def delete_examples(cls):
+        connection = Connection()
+        scheduled_humidity = connection.get_all_scheduled_preferences_humidity('kitchen')
+        scheduled_temperature = connection.get_all_scheduled_preferences_temperature('kitchen')
+
+        for preference in scheduled_humidity:
+            connection.delete_preference(preference)
+
+        for preference in scheduled_temperature:
+            connection.delete_preference(preference)
+
+        connection.close()
+
 
 if __name__ == '__main__':
     DBTest.example_setup()
     DBTest.display_preferences()
     DBTest.display_records()
+    DBTest.delete_examples()
