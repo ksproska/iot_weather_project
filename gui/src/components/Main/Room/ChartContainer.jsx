@@ -13,11 +13,24 @@ import Chart from "./Chart";
 
 import styles from "../../../styles/Main/Room/chartContainer.module.css";
 
-function ChartContainer({ roomName }) {
+function ChartContainer({ roomName, data }) {
 
     const [isTempHidden, setIsTempHidden] = useState(false);
     const [isHumHidden, setIsHumHidden] = useState(true);
     const [isPressHidden, setIsPressHidden] = useState(true);
+
+    const [isThermoShown, setIsThermoShown] = useState(false);
+    const [isDryerShown, setIsDryerShown] = useState(false);
+
+    const [timeRange, setTimeRange] = useState("day");
+
+    const buttonDayClass = styles.chart_button + " " + (timeRange === "day" ? styles.chart_button_selected : styles.chart_button_dimmed);
+    const buttonMonthClass = styles.chart_button + " " + (timeRange === "month" ? styles.chart_button_selected : styles.chart_button_dimmed);
+    const buttonYearClass = styles.chart_button + " " + (timeRange === "year" ? styles.chart_button_selected : styles.chart_button_dimmed);
+
+    const buttonContainerDay = timeRange == "day" ? styles.chart_button_container_selected : styles.chart_button_container;
+    const buttonContainerMonth = timeRange == "month" ? styles.chart_button_container_selected : styles.chart_button_container;
+    const buttonContainerYear = timeRange == "year" ? styles.chart_button_container_selected : styles.chart_button_container;
 
     const switchTemp = () => {
         setIsTempHidden((prev) => !prev);
@@ -31,29 +44,50 @@ function ChartContainer({ roomName }) {
         setIsPressHidden((prev) => !prev);
     };
 
+    const switchThermo = () => {
+        setIsThermoShown(prev => !prev);
+    }
+
+    const switchDryer = () => {
+        setIsDryerShown(prev => !prev);
+    }
+
+    const switchDay = () => {
+        setTimeRange("day");
+    };
+
+    const switchMonth = () => {
+        setTimeRange("month");
+    };
+
+    const switchYear = () => {
+        setTimeRange("year");
+    };
+
     return (
         <Grid container className={styles.chart_grid_container}>
             <Grid item xs={2} className={styles.chart_button_column}>
                 <Stack spacing={1}>
-                    <Box className={styles.chart_button_container_selected}>
-                        <Button variant="outlined" className={styles.chart_button + " " + styles.chart_button_selected}>
+                    <Box className={buttonContainerDay}>
+                        <Button variant="outlined" className={buttonDayClass} onClick={switchDay}>
                             Today
                         </Button>
                     </Box>
-                    <Box className={styles.chart_button_container}>
-                        <Button variant="outlined" className={styles.chart_button + " " + styles.chart_button_dimmed}>
+                    <Box className={buttonContainerMonth}>
+                        <Button variant="outlined" className={buttonMonthClass} onClick={switchMonth}>
                             This week
                         </Button>
                     </Box>
-                    <Box className={styles.chart_button_container}>
-                        <Button variant="outlined" className={styles.chart_button + " " + styles.chart_button_dimmed}>
+                    <Box className={buttonContainerYear}>
+                        <Button variant="outlined" className={buttonYearClass} onClick={switchYear}>
                             This month
                         </Button>
                     </Box>
                 </Stack>
             </Grid>
             <Grid item xs={8} className={styles.chart_container}>
-                <Chart roomName={roomName} isTempHidden={isTempHidden} isHumHidden={isHumHidden} isPressHidden={isPressHidden} />
+                <Chart roomName={roomName} isTempHidden={isTempHidden} isHumHidden={isHumHidden} isPressHidden={isPressHidden}
+                    isThermoShown={isThermoShown} isDryerShown={isDryerShown} roomData={data} timeRange={timeRange} />
             </Grid>
             <Grid item xs={2} className={styles.chart_checkboxes_column}>
                 <Stack>
@@ -69,8 +103,8 @@ function ChartContainer({ roomName }) {
                         Devices
                     </Typography>
                     <FormGroup>
-                        <FormControlLabel control={<Checkbox />} label="Thermostat" />
-                        <FormControlLabel control={<Checkbox />} label="Dryer" />
+                        <FormControlLabel control={<Checkbox onClick={switchThermo} />} label="Thermostat" />
+                        <FormControlLabel control={<Checkbox onClick={switchDryer} />} label="Dryer" />
                     </FormGroup>
                 </Stack>
             </Grid>
