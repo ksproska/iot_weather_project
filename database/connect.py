@@ -10,7 +10,7 @@ def print_heading(message):
     print(f'\n\033[95m{message}\033[0m')
 
 
-def all_commands_from_file(filename) -> list[str]:
+def all_commands_from_file(filename):
     """
     Splits file contents by ';' and returns list[str] of queries
 
@@ -28,7 +28,12 @@ def all_commands_from_file(filename) -> list[str]:
 
 
 class Connection:
-    def __init__(self, database_filename="weather_project.db"):
+    PROJECT_PATH = '/home/pi/Desktop/proj/iot_weather_project/'
+    DEFAULT_TEMPERATURE = 20
+    DEFAULT_HUMIDITY = 0.3
+    # PROJECT_PATH = 'C:/python/iot_weather_project/'
+
+    def __init__(self, database_filename=f"{PROJECT_PATH}weather_project.db"):
         """
         Establishing connection for database, necessary for executing any queries.
 
@@ -36,6 +41,17 @@ class Connection:
         """
         self.__connection = sqlite3.connect(database_filename)
         self.__cursor = self.__connection.cursor()
+        self.init_tables_if_not_exist()
+
+    def register_room(self, room_name):
+        command_temperature = f'SELECT COUNT(*) FROM {Preference_temperature.__name__} WHERE room_name=\'{room_name}\' AND weight={Preference_temperature.WEIGHT_DEFAULT};'
+        command_humidity = f'SELECT COUNT(*) FROM {Preference_humidity.__name__} WHERE room_name=\'{room_name}\' AND weight={Preference_humidity.WEIGHT_DEFAULT};'
+        count_temperature = self.execute(command_temperature).fetchone()[0]
+        count_humidity = self.execute(command_humidity).fetchone()[0]
+        if count_temperature == 0:
+            self.add_object(Preference_temperature.as_default(self.DEFAULT_TEMPERATURE, room_name))
+        if count_humidity == 0:
+            self.add_object(Preference_humidity.as_default(self.DEFAULT_HUMIDITY, room_name))
 
     def execute(self, query_command):
         """
@@ -46,38 +62,42 @@ class Connection:
     def commit(self):
         self.__connection.commit()
 
-    def __run_lines_with_print(self, *lines):
+    def close(self):
+        self.__connection.close()
+
+    def __run_lines(self, *lines):
         for line in lines:
-            print_heading(f'EXECUTING LINE:')
-            print(line)
+            # print_heading(f'EXECUTING LINE:')
+            # print(line)
             try:
                 self.execute(line)
             except Exception as e:
-                print_error(f'ERROR: {e}')
+                pass
+                # print_error(f'ERROR: {e}')
         self.commit()
 
     def drop_tables(self):
-        all_commands = all_commands_from_file('drop_tables.sql')
-        self.__run_lines_with_print(*all_commands)
+        all_commands = all_commands_from_file(f'{self.PROJECT_PATH}database/drop_tables.sql')
+        self.__run_lines(*all_commands)
 
-    def init_tables(self):
-        all_commands = all_commands_from_file('init_tables.sql')
-        self.__run_lines_with_print(*all_commands)
+    def init_tables_if_not_exist(self):
+        all_commands = all_commands_from_file(f'{self.PROJECT_PATH}database/init_tables.sql')
+        self.__run_lines(*all_commands)
 
-    def add_object(self, addable_object: AddableToDatabase):
+    def add_object(self, addable_object):
         """
         :param addable_object: object inheriting from AddableToDatabase
         """
         self.execute(addable_object.sql_addable)
         self.commit()
 
-    def __get_all_objects(self, class_type, extra_conditions='') -> list:
+    def __get_all_objects(self, class_type, extra_conditions=''):
         """
         :param class_type: class type inheriting from AddableToDatabase
         :param extra_conditions: rest of the query after SELECT {col1, col2, ...} FROM {tablename}
         :return: list[class_type]
         """
-        command = f'SELECT ' + ', '.join([str(x) for x in class_type.colums_order()]) \
+        command = f'SELECT ' + ', '.join([str(x) for x in class_type.columns_order()]) \
                   + f' FROM {class_type.__name__}{extra_conditions};'
         all_objects = []
         result = self.execute(command).fetchall()
@@ -85,7 +105,7 @@ class Connection:
             all_objects.append(class_type(*row))
         return all_objects
 
-    def __get_current_preference(self, class_type, room_name: str):
+    def __get_current_preference(self, class_type, room_name):
         """
         Rules for accessing current:
 
@@ -97,6 +117,7 @@ class Connection:
         :param room_name: name of a room for WHERE condition
         :return: object of type class_type
         """
+        self.register_room(room_name)
         current = self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
                                                          f'AND time(\'now\', \'localtime\') BETWEEN time_start AND time_end '
                                                          f'AND ('
@@ -112,7 +133,7 @@ class Connection:
         # [print(x) for x in current]
         return current[0]
 
-    def __get_default_preference(self, class_type, room_name: str):
+    def __get_default_preference(self, class_type, room_name):
         """
             The most recent (according to preference_timestamp) object of class_type, with weight DEFAULT
 
@@ -120,13 +141,14 @@ class Connection:
             :param room_name: name of a room for WHERE condition
             :return: object of type class_type
         """
+        self.register_room(room_name)
         current = self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
                                                          f'AND weight={class_type.WEIGHT_DEFAULT} '
                                                      f'ORDER BY preference_timestamp DESC')
         # [print(x) for x in current]
         return current[0]
 
-    def __get_all_scheduled_preferences(self, class_type, room_name: str) -> list:
+    def __get_all_scheduled_preferences(self, class_type, room_name):
         """
             List of objects of class class_type, with weight SCHEDULE, sorted by time_start
 
@@ -138,7 +160,19 @@ class Connection:
                                                     f'AND weight = {class_type.WEIGHT_SCHEDULE} '
                                                   f'ORDER BY time_start ASC')
 
-    def get_all_records(self, room_name: str, newest_to_oldest=True):
+    def __get_all_default_preferences(self, class_type, room_name):
+        """
+            List of objects of class class_type, with weight SCHEDULE, sorted by time_start
+
+            :param class_type: class type inheriting from Preference
+            :param room_name: name of a room for WHERE condition
+            :return: list[class_type]
+        """
+        return self.__get_all_objects(class_type, f' WHERE room_name=\'{room_name}\' '
+                                                    f'AND weight = {class_type.WEIGHT_DEFAULT} '
+                                                  f'ORDER BY time_start ASC')
+
+    def get_all_records(self, room_name, newest_to_oldest=True):
         """
         :param room_name: name of a room for WHERE condition
         :param newest_to_oldest: sorting order
@@ -150,6 +184,15 @@ class Connection:
             order = 'ASC'
         return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' '
                                               f'ORDER BY record_time {order}')
+
+    def newest_record(self, room_name):
+        """
+        :param room_name: name of a room for WHERE condition
+        :param newest_to_oldest: sorting order
+        :return: list[Record] sorted according to newest_to_oldest
+        """
+        return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' '
+                                              f'ORDER BY record_time DESC')[0]
 
     # getters for all for each table ___________________________________________________________________________________
     @property
@@ -164,22 +207,34 @@ class Connection:
     def all_records(self):
         return self.__get_all_objects(Record)
 
+    def delete_preference(self, preference: Preference):
+        command = f"DELETE FROM {preference.__class__.__name__} WHERE preference_timestamp=\'{preference.preference_timestamp}\'"
+        self.execute(command)
+        self.commit()
+
     # getters for scheduled preferences ________________________________________________________________________________
-    def get_all_scheduled_preferences_temperature(self, room_name: str):
+    def get_all_scheduled_preferences_temperature(self, room_name):
         return self.__get_all_scheduled_preferences(Preference_temperature, room_name)
 
-    def get_all_scheduled_preferences_humidity(self, room_name: str):
+    def get_all_scheduled_preferences_humidity(self, room_name):
         return self.__get_all_scheduled_preferences(Preference_humidity, room_name)
 
+    # getters for default preferences __________________________________________________________________________________
+    def get_all_default_preferences_temperature(self, room_name):
+        return self.__get_all_default_preferences(Preference_temperature, room_name)
+
+    def get_all_default_preferences_humidity(self, room_name):
+        return self.__get_all_default_preferences(Preference_humidity, room_name)
+
     # different preferences value getters ______________________________________________________________________________
-    def current_preference_temperature(self, room_name: str) -> float:
+    def current_preference_temperature(self, room_name):
         return self.__get_current_preference(Preference_temperature, room_name).value
 
-    def current_preference_humidity(self, room_name: str) -> float:
+    def current_preference_humidity(self, room_name):
         return self.__get_current_preference(Preference_humidity, room_name).value
 
-    def default_preference_temperature(self, room_name: str) -> float:
+    def default_preference_temperature(self, room_name):
         return self.__get_default_preference(Preference_temperature, room_name).value
 
-    def default_preference_humidity(self, room_name: str) -> float:
+    def default_preference_humidity(self, room_name):
         return self.__get_default_preference(Preference_humidity, room_name).value
