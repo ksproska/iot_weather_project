@@ -70,7 +70,7 @@ class Preference(AddableToDatabase):
         self.value = value
         self.preference_timestamp = preference_timestamp
         if type(self.preference_timestamp) is str:
-            self.record_time = datetime.strptime(preference_timestamp, '%Y-%m-%d %H:%M:%S.%f')
+            self.preference_timestamp = datetime.strptime(preference_timestamp, '%Y-%m-%d %H:%M:%S.%f')
         self.time_start = time_start
         self.time_end = time_end
 

@@ -96,11 +96,11 @@ class DBTest:
     def grouped_by_examples(cls):
         connection = Connection()
         grouped_by_day = connection.get_records_grouped_by_day('kitchen')
-        grouped_by_minute = connection.get_records_grouped_by_minute('kitchen')
+        grouped_by_hour = connection.get_records_grouped_by_hour('kitchen')
 
-        print_heading(f'GROUPED BY MINUTE --------------------------------------------------------------')
-        for minute in grouped_by_minute:
-            print(minute)
+        print_heading(f'GROUPED BY HOUR --------------------------------------------------------------')
+        for hour in grouped_by_hour:
+            print(hour)
         print_heading(f'GROUPED BY DAY --------------------------------------------------------------')
         for day in grouped_by_day:
             print(day)

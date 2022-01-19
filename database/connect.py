@@ -188,6 +188,9 @@ class Connection:
     def get_records_grouped_by_minute(self, room_name):
         return self.__get_grouped_records(room_name, '%Y-%m-%d %H:%M')
 
+    def get_records_grouped_by_hour(self, room_name):
+        return self.__get_grouped_records(room_name, '%Y-%m-%d %H')
+
     def get_records_grouped_by_day(self, room_name):
         return self.__get_grouped_records(room_name, '%Y-%m-%d')
 
