@@ -95,10 +95,10 @@ function TempAims({ roomId, defTemp, tempPrefs, setDefTemp, setTempPrefs }) {
                             <TableBody>
                                 {tempPrefs.map(pref => <TableRow>
                                     <TableCell>{pref['time_start']}</TableCell>
-                                    <TableCell>{pref['end_time']}</TableCell>
+                                    <TableCell>{pref['time_end']}</TableCell>
                                     <TableCell>{pref['value']}</TableCell>
                                     <TableCell>
-                                        <Button color="error" variant="contained" onClick={() => handleRemovePref(pref['time_start'], pref['end_time'], pref['value'] * 100)}>
+                                        <Button color="error" variant="contained" onClick={() => handleRemovePref(pref['time_start'], pref['time_end'], pref['value'] * 100)}>
                                             X
                                         </Button>
                                     </TableCell>

@@ -1,6 +1,13 @@
 export default async function fetchAddHumSchedule(roomId, start, end, val) {
+
+    let startTemp = new Date(start);
+    let startLocal = startTemp.toLocaleString("pl").split(',')[1].trim();
+
+    let endTemp = new Date(end);
+    let endLocal = endTemp.toLocaleString("pl").split(',')[1].trim();
+
     return fetch(`/${roomId}/add_hum_schedule`, {
-        body: JSON.stringify({ 'time_start': start, 'time_end': end, 'value': val / 100 }),
+        body: JSON.stringify({ 'time_start': startLocal.slice(0, 5), 'time_end': endLocal.slice(0, 5), 'value': val / 100 }),
         method: "POST",
         headers: {
             'Content-Type': 'application/json'

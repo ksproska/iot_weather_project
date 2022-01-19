@@ -69,7 +69,7 @@ function Room({ room }) {
             </Grid>
             <Grid item xs={4} xl={6}>
                 {defTemp != null ? <TempAims roomId={room['room_identifier']} defTemp={defTemp}
-                    tempPrefs={tempPrefs} setDefTemp={setDefHum} setTempPrefs={setTempPrefs} /> : <div>LOADING</div>}
+                    tempPrefs={tempPrefs} setDefTemp={setDefTemp} setTempPrefs={setTempPrefs} /> : <div>LOADING</div>}
             </Grid>
             <Grid item xs={4} xl={6}>
                 {defHum != null ? <HumidityAims roomId={room['room_identifier']} defHum={defHum}
