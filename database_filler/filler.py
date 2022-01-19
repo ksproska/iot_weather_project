@@ -4,7 +4,7 @@ from logic.environment.simulation_objects import *
 import datetime
 import random
 
-DATA_START = (datetime.datetime.now() - datetime.timedelta(days=1))
+DATA_START = (datetime.datetime.now() - datetime.timedelta(days=30))
 DATA_END = datetime.datetime.now()
 DELTA_TIME = datetime.timedelta(minutes=1)
 
