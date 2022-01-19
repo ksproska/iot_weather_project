@@ -36,7 +36,7 @@ function Chart({ roomName, isTempHidden, isHumHidden, isPressHidden, isThermoSho
     const dryers = [];
 
     if (Array.isArray(records)) {
-        records.forEach(record => times.push(`${record['hour']}:${record['minute']}`));
+        records.forEach(record => times.push(`${('0' + record['hour']).slice(-2)}:${('0' + record['minute']).slice(-2)}`));
         records.forEach(record => temps.push(record['temperature']));
         records.forEach(record => humids.push(record['humidity']));
         records.forEach(record => pressures.push(record['pressure']));
@@ -85,8 +85,8 @@ function Chart({ roomName, isTempHidden, isHumHidden, isPressHidden, isThermoSho
                 label: "Pressure",
                 data: pressures,
                 yAxisID: 'y2',
-                borderColor: 'rgb(235, 255, 51)',
-                backgroundColor: 'rgba(235, 255, 51, 0.5)',
+                borderColor: 'rgb(70, 170, 10)',
+                backgroundColor: 'rgba(70, 170, 10, 0.5)',
                 hidden: isPressHidden
             },
         ]
@@ -119,6 +119,8 @@ function Chart({ roomName, isTempHidden, isHumHidden, isPressHidden, isThermoSho
                 type: 'linear',
                 display: !isTempHidden,
                 position: 'left',
+                min: 15,
+                max: 30,
                 title: {
                     display: 'true',
                     text: 'Temperature [°C]'
@@ -128,6 +130,8 @@ function Chart({ roomName, isTempHidden, isHumHidden, isPressHidden, isThermoSho
                 type: 'linear',
                 display: !isHumHidden,
                 position: 'left',
+                min: 0,
+                max: 1,
                 title: {
                     display: 'true',
                     text: 'Humidity [%]'
