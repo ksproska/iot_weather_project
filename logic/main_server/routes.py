@@ -24,9 +24,9 @@ def dict_of_sch_prefs(db_connection, room_id):
     hum_prefs = db_connection.get_all_scheduled_preferences_humidity(room_id)
     dict_to_json = {"def_temp":db_connection.default_preference_temperature(room_id), "def_hum":db_connection.default_preference_humidity(room_id), "temp_prefs": [], "hum_prefs":[]}
     for tmp_pref_rec in temp_prefs:
-        dict_to_json["temp_prefs"].append({"time_start":str(tmp_pref_rec.time_start)[0:-3], "time_end":str(tmp_pref_rec.time_end)[0:-3], "temp":tmp_pref_rec.value})
+        dict_to_json["temp_prefs"].append({"time_start":str(tmp_pref_rec.time_start)[0:-3], "time_end":str(tmp_pref_rec.time_end)[0:-3], "value":tmp_pref_rec.value})
     for hum_pref_rec in hum_prefs:
-        dict_to_json["hum_prefs"].append({"time_start":str(hum_pref_rec.time_start)[0:-3], "time_end":str(hum_pref_rec.time_end)[0:-3], "temp":hum_pref_rec.value})
+        dict_to_json["hum_prefs"].append({"time_start":str(hum_pref_rec.time_start)[0:-3], "time_end":str(hum_pref_rec.time_end)[0:-3], "value":hum_pref_rec.value})
     return dict_to_json
 
 @routes.route("/")
@@ -41,14 +41,14 @@ def get_room_data():
 def get_data_for_room(room_identifier):
     # Get data from database
     db_connection = Connection()
-    list_of_records = db_connection.get_all_records(room_identifier)
+    list_of_records = db_connection.get_all_records(room_identifier, False)
     dict_to_json = {"day":[], "week":[], "month":[]}
     for rec in list_of_records:
 
         # Check where record belongs and add it to proper label
 
         if (datetime.now() - rec.record_time).days < 1:
-            dict_to_json["day"].append({"year":rec.record_time.year,"month":rec.record_time.month, "day": rec.record_time.day, "hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
+            dict_to_json["day"].append({"hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
         if (datetime.now() - rec.record_time).days < datetime.today().weekday():
             dict_to_json["week"].append({"year":rec.record_time.year,"month":rec.record_time.month, "day": rec.record_time.day, "hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
         if (datetime.now() - rec.record_time).days < rec.record_time.day:
@@ -96,8 +96,8 @@ def set_default_temperature(room_identifier):
 @routes.route(r"/<room_identifier>/delete_temp_schedule")
 def delete_temp_schedule(room_identifier):
     db_connection = Connection()
-    time_start = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
-    time_end = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+    time_start = datetime.strptime(request.json['time_start'], "%H:%M").time()
+    time_end = datetime.strptime(request.json['time_start'], "%H:%M").time()
     value = float(request.json['value'])
     db_connection.delete_preference(Preference_temperature.as_schedule(value, room_identifier, time_start, time_end))
     dict_to_json = dict_of_sch_prefs(db_connection, room_identifier)
@@ -107,8 +107,8 @@ def delete_temp_schedule(room_identifier):
 @routes.route(r"/<room_identifier>/delete_hum_schedule")
 def delete_hum_schedule(room_identifier):
     db_connection = Connection()
-    time_start = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
-    time_end = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+    time_start = datetime.strptime(request.json['time_start'], "%H:%M").time()
+    time_end = datetime.strptime(request.json['time_start'], "%H:%M").time()
     value = float(request.json['value'])
     db_connection.delete_preference(Preference_humidity.as_schedule(value, room_identifier, time_start, time_end))
     dict_to_json = dict_of_sch_prefs(db_connection, room_identifier)
@@ -118,8 +118,8 @@ def delete_hum_schedule(room_identifier):
 @routes.route(r"/<room_identifier>/add_temp_schedule")
 def add_temp_schedule(room_identifier):
     db_connection = Connection()
-    time_start = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
-    time_end = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+    time_start = datetime.strptime(request.json['time_start'], "%H:%M").time()
+    time_end = datetime.strptime(request.json['time_start'], "%H:%M").time()
     if (time_start == time_end):
         return jsonify({"message":"This schedule is empty"}), 400
     value = float(request.json['value'])
@@ -139,8 +139,8 @@ def add_temp_schedule(room_identifier):
 @routes.route(r"/<room_identifier>/add_hum_schedule")
 def add_hum_schedule(room_identifier):
     db_connection = Connection()
-    time_start = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
-    time_end = datetime.strptime(request.json['time_start'], "%H:%M:%S").time()
+    time_start = datetime.strptime(request.json['time_start'], "%H:%M").time()
+    time_end = datetime.strptime(request.json['time_start'], "%H:%M").time()
     if (time_start == time_end):
         return jsonify({"message":"This schedule is empty"}), 400
     value = float(request.json['value'])
