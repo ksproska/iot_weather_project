@@ -23,6 +23,8 @@ function Room({ room }) {
     const [tempPrefs, setTempPrefs] = useState([]);
     const [humPrefs, setHumPrefs] = useState([]);
 
+    console.log(roomData);
+
     useEffect(() => {
 
         let isSubscribed = true;
