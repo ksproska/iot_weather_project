@@ -52,20 +52,17 @@ def get_data_for_room(room_identifier):
         # Check where record belongs and add it to proper label
         if (datetime.now() - rec.record_time).days < 1:
             dict_to_json["day"].append({"hour":rec.record_time.hour, "minute":rec.record_time.minute,"second":rec.record_time.second, "temperature": rec.record_temp, "humidity": rec.record_humidity, "pressure":rec.record_press, "thermostat_state":rec.device_termost, "dryer_state":rec.device_dryer})
-        else:
-            break
+        
 
     for rec_bm in records_by_minute:
         if (datetime.now() - rec.record_time).days < datetime.today().weekday():
             dict_to_json["week"].append({"month":rec_bm.record_time.month, "day": rec_bm.record_time.day, "hour":rec_bm.record_time.hour, "minute":rec_bm.record_time.minute,"second":rec_bm.record_time.second, "temperature": rec_bm.record_temp, "humidity": rec_bm.record_humidity, "pressure":rec_bm.record_press, "thermostat_state":rec_bm.device_termost, "dryer_state":rec_bm.device_dryer})
-        else:
-            break
+        
 
     for rec_bd in records_by_day:
         if datetime.now().month == rec.record_time.month and datetime.now() >= rec.record_time:
             dict_to_json["month"].append({"month":rec_bd.record_time.month, "day": rec_bd.record_time.day, "hour":rec_bd.record_time.hour, "minute":rec_bd.record_time.minute,"second":rec_bd.record_time.second, "temperature": rec_bd.record_temp, "humidity": rec_bd.record_humidity, "pressure":rec_bd.record_press, "thermostat_state":rec_bd.device_termost, "dryer_state":rec_bd.device_dryer})
-        else:
-            break
+        
 
     db_connection.close()
     return jsonify(dict_to_json)
