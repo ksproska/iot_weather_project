@@ -25,12 +25,12 @@ function ChartContainer({ roomName, data }) {
     const [timeRange, setTimeRange] = useState("day");
 
     const buttonDayClass = styles.chart_button + " " + (timeRange === "day" ? styles.chart_button_selected : styles.chart_button_dimmed);
+    const buttonWeekClass = styles.chart_button + " " + (timeRange === "week" ? styles.chart_button_selected : styles.chart_button_dimmed);
     const buttonMonthClass = styles.chart_button + " " + (timeRange === "month" ? styles.chart_button_selected : styles.chart_button_dimmed);
-    const buttonYearClass = styles.chart_button + " " + (timeRange === "year" ? styles.chart_button_selected : styles.chart_button_dimmed);
 
-    const buttonContainerDay = timeRange == "day" ? styles.chart_button_container_selected : styles.chart_button_container;
-    const buttonContainerMonth = timeRange == "month" ? styles.chart_button_container_selected : styles.chart_button_container;
-    const buttonContainerYear = timeRange == "year" ? styles.chart_button_container_selected : styles.chart_button_container;
+    const buttonContainerDay = timeRange === "day" ? styles.chart_button_container_selected : styles.chart_button_container;
+    const buttonContainerWeek = timeRange === "week" ? styles.chart_button_container_selected : styles.chart_button_container;
+    const buttonContainerMonth = timeRange === "month" ? styles.chart_button_container_selected : styles.chart_button_container;
 
     const switchTemp = () => {
         setIsTempHidden((prev) => !prev);
@@ -56,12 +56,12 @@ function ChartContainer({ roomName, data }) {
         setTimeRange("day");
     };
 
-    const switchMonth = () => {
-        setTimeRange("month");
+    const switchWeek = () => {
+        setTimeRange("week");
     };
 
-    const switchYear = () => {
-        setTimeRange("year");
+    const switchMonth = () => {
+        setTimeRange("month");
     };
 
     return (
@@ -73,13 +73,13 @@ function ChartContainer({ roomName, data }) {
                             Today
                         </Button>
                     </Box>
-                    <Box className={buttonContainerMonth}>
-                        <Button variant="outlined" className={buttonMonthClass} onClick={switchMonth}>
+                    <Box className={buttonContainerWeek}>
+                        <Button variant="outlined" className={buttonWeekClass} onClick={switchWeek}>
                             This week
                         </Button>
                     </Box>
-                    <Box className={buttonContainerYear}>
-                        <Button variant="outlined" className={buttonYearClass} onClick={switchYear}>
+                    <Box className={buttonContainerMonth}>
+                        <Button variant="outlined" className={buttonMonthClass} onClick={switchMonth}>
                             This month
                         </Button>
                     </Box>

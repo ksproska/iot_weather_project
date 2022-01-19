@@ -22,9 +22,11 @@ ChartJS.register(
 
 function Chart({ roomName, isTempHidden, isHumHidden, isPressHidden, isThermoShown, isDryerShown, roomData, timeRange }) {
 
-    const records = roomData[timeRange];
+    let records = null;
 
-    console.log(records);
+    if (roomData !== null && roomData !== undefined) {
+        records = roomData[timeRange];
+    }
 
     const times = [];
     const temps = [];

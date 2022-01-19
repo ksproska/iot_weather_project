@@ -1,5 +1,5 @@
 export default async function fetchRoomAims(roomId) {
-    fetch(`/${roomId}/aims`, {
+    return fetch(`/${roomId}/aims`, {
         method: "GET",
         headers: {
             'Content-Type': 'application/json'
