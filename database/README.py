@@ -92,9 +92,26 @@ class DBTest:
 
         connection.close()
 
+    @classmethod
+    def grouped_by_examples(cls):
+        connection = Connection()
+        grouped_by_day = connection.get_records_grouped_by_day('kitchen')
+        grouped_by_minute = connection.get_records_grouped_by_minute('kitchen')
+
+        print_heading(f'GROUPED BY MINUTE --------------------------------------------------------------')
+        for minute in grouped_by_minute:
+            print(minute)
+        print_heading(f'GROUPED BY DAY --------------------------------------------------------------')
+        for day in grouped_by_day:
+            print(day)
+
+        connection.close()
+
 
 if __name__ == '__main__':
     DBTest.example_setup()
     DBTest.display_preferences()
     DBTest.display_records()
     DBTest.delete_examples()
+    DBTest.grouped_by_examples()
+
