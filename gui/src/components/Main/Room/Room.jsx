@@ -7,26 +7,21 @@ import CurrentRoomInfo from "./CurrentRoomInfo";
 import HumidityAims from "./HumidityAims";
 import TempAims from "./TempAims";
 
+import fetchRoomAims from "../../../utils/fetchRoomAims";
 import fetchRoomCurrent from "../../../utils/fetchRoomCurrent";
 import fetchRoomData from "../../../utils/fetchRoomData";
 
 import styles from "../../../styles/Main/Room/room.module.css";
-
-// TODO: usuwanko aimów
-// TODO: jak ma wyglądać edit i add nowych aimów
-// TODO: ogólnie wygląd (szczególnie kolorki i jakieś rameczki, co do responsywności to chyba za dużo zabawy jak na oddanie Nowakowi)
-// TODO: reload'ować dokument czy nie :thinking:
-// TODO: humidity castować mam ja na procenty, czy mam dostawać
-// TODO: potrzebuję danych przykładowych dla testowanka
-
-// TODO: CONFIRMED - Devices przy włączeniu mają nakładać punkty na ten wykres liniowy (jakiś szary-OFF i normalny-ON)
 
 function Room({ room }) {
 
     const [roomData, setRoomData] = useState(null);
     const [roomCurrent, setRoomCurrent] = useState(null);
 
-    // console.log(roomData);
+    const [defTemp, setDefTemp] = useState(null);
+    const [defHum, setDefHum] = useState(null);
+    const [tempPrefs, setTempPrefs] = useState([]);
+    const [humPrefs, setHumPrefs] = useState([]);
 
     useEffect(() => {
 
@@ -50,6 +45,15 @@ function Room({ room }) {
                     setRoomCurrent(obj);
                 }) : null).catch(err => console.error(err));
             }
+
+            if (isSubscribed) {
+                fetchRoomAims(room['room_identifier']).then(isSubscribed ? ((res) => {
+                    setDefTemp(res['def_temp']);
+                    setDefHum(res['def_hum']);
+                    setTempPrefs(res['temp_prefs']);
+                    setHumPrefs(res['hum_prefs']);
+                }) : null).catch(err => console.error(err));
+            }
         }
 
         return () => (isSubscribed = false);
@@ -64,10 +68,12 @@ function Room({ room }) {
                 {roomCurrent != null ? <CurrentRoomInfo roomInfo={roomCurrent} /> : <div>LOADING</div>}
             </Grid>
             <Grid item xs={4} xl={6}>
-                <TempAims />
+                {defTemp != null ? <TempAims roomId={room['room_identifier']} defTemp={defTemp}
+                    tempPrefs={tempPrefs} setDefTemp={setDefHum} setTempPrefs={setTempPrefs} /> : <div>LOADING</div>}
             </Grid>
             <Grid item xs={4} xl={6}>
-                <HumidityAims />
+                {defHum != null ? <HumidityAims roomId={room['room_identifier']} defHum={defHum}
+                    humPrefs={humPrefs} setDefHum={setDefHum} setHumPrefs={setHumPrefs} /> : <div>LOADING</div>}
             </Grid>
         </Grid >
     );
