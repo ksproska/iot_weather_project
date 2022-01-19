@@ -85,7 +85,7 @@ def set_default_humidity(room_identifier):
     db_connection.close()
     return jsonify({"status":"OK"}), 200
 
-@routes.route(r"/<room_identifier>/set_def_temp")
+@routes.route(r"/<room_identifier>/set_def_temp", methods = ["POST"])
 def set_default_temperature(room_identifier):
     db_connection = Connection()
     temperature = float(request.json['def_temperature'])
@@ -93,33 +93,33 @@ def set_default_temperature(room_identifier):
     db_connection.close()
     return jsonify({"status":"OK"}), 200
 
-@routes.route(r"/<room_identifier>/delete_temp_schedule")
+@routes.route(r"/<room_identifier>/delete_temp_schedule", methods = ["POST"])
 def delete_temp_schedule(room_identifier):
     db_connection = Connection()
     time_start = datetime.strptime(request.json['time_start'], "%H:%M").time()
-    time_end = datetime.strptime(request.json['time_start'], "%H:%M").time()
+    time_end = datetime.strptime(request.json['time_end'], "%H:%M").time()
     value = float(request.json['value'])
     db_connection.delete_preference(Preference_temperature.as_schedule(value, room_identifier, time_start, time_end))
     dict_to_json = dict_of_sch_prefs(db_connection, room_identifier)
     db_connection.close()
     return jsonify(dict_to_json), 200
 
-@routes.route(r"/<room_identifier>/delete_hum_schedule")
+@routes.route(r"/<room_identifier>/delete_hum_schedule", methods = ["POST"])
 def delete_hum_schedule(room_identifier):
     db_connection = Connection()
     time_start = datetime.strptime(request.json['time_start'], "%H:%M").time()
-    time_end = datetime.strptime(request.json['time_start'], "%H:%M").time()
+    time_end = datetime.strptime(request.json['time_end'], "%H:%M").time()
     value = float(request.json['value'])
     db_connection.delete_preference(Preference_humidity.as_schedule(value, room_identifier, time_start, time_end))
     dict_to_json = dict_of_sch_prefs(db_connection, room_identifier)
     db_connection.close()
     return jsonify(dict_to_json), 200
 
-@routes.route(r"/<room_identifier>/add_temp_schedule")
+@routes.route(r"/<room_identifier>/add_temp_schedule", methods = ["POST"])
 def add_temp_schedule(room_identifier):
     db_connection = Connection()
     time_start = datetime.strptime(request.json['time_start'], "%H:%M").time()
-    time_end = datetime.strptime(request.json['time_start'], "%H:%M").time()
+    time_end = datetime.strptime(request.json['time_end'], "%H:%M").time()
     if (time_start == time_end):
         return jsonify({"message":"This schedule is empty"}), 400
     value = float(request.json['value'])
@@ -136,11 +136,11 @@ def add_temp_schedule(room_identifier):
     return jsonify({"status":"Schedule added"}), 200
     
 
-@routes.route(r"/<room_identifier>/add_hum_schedule")
+@routes.route(r"/<room_identifier>/add_hum_schedule", methods = ["POST"])
 def add_hum_schedule(room_identifier):
     db_connection = Connection()
     time_start = datetime.strptime(request.json['time_start'], "%H:%M").time()
-    time_end = datetime.strptime(request.json['time_start'], "%H:%M").time()
+    time_end = datetime.strptime(request.json['time_end'], "%H:%M").time()
     if (time_start == time_end):
         return jsonify({"message":"This schedule is empty"}), 400
     value = float(request.json['value'])
