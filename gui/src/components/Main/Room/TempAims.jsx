@@ -93,7 +93,7 @@ function TempAims({ roomId, defTemp, tempPrefs, setDefTemp, setTempPrefs }) {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {tempPrefs.map(pref => <TableRow>
+                                {Array.isArray(tempPrefs) ? tempPrefs.map(pref => <TableRow key={pref['time_start']}>
                                     <TableCell>{pref['time_start']}</TableCell>
                                     <TableCell>{pref['time_end']}</TableCell>
                                     <TableCell>{pref['value']}</TableCell>
@@ -102,7 +102,7 @@ function TempAims({ roomId, defTemp, tempPrefs, setDefTemp, setTempPrefs }) {
                                             X
                                         </Button>
                                     </TableCell>
-                                </TableRow>)}
+                                </TableRow>) : null}
                                 {isAddShown ? <TableRow>
                                     <LocalizationProvider dateAdapter={AdapterDateFns} locale={plLocale}>
                                         <TableCell>
