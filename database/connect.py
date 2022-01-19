@@ -185,6 +185,25 @@ class Connection:
         return self.__get_all_objects(Record, f' WHERE room_name=\'{room_name}\' '
                                               f'ORDER BY record_time {order}')
 
+    def get_records_grouped_by_minute(self, room_name):
+        return self.__get_grouped_records(room_name, '%Y-%m-%d %H:%M')
+
+    def get_records_grouped_by_day(self, room_name):
+        return self.__get_grouped_records(room_name, '%Y-%m-%d')
+
+    def __get_grouped_records(self, room_name, acc):
+        command = f'SELECT strftime("{acc}", record_time), room_name, ' \
+                  f'AVG(record_temp), AVG(record_humidity), AVG(record_press), ' \
+                  f'AVG(device_termost), AVG(device_dryer) ' \
+                  f'FROM {Record.__name__}  WHERE room_name=\'{room_name}\' ' \
+                  f' GROUP BY strftime("{acc}", record_time)' \
+                  f' ORDER BY strftime("{acc}", record_time) ASC;'
+        all_objects = []
+        result = self.execute(command).fetchall()
+        for row in result:
+            all_objects.append(Record(datetime.strptime(row[0], acc), *row[1:-2], row[-2] > 0.5, row[-1] > 0.5))
+        return all_objects
+
     def newest_record(self, room_name):
         """
         :param room_name: name of a room for WHERE condition
