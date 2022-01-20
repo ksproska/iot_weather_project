@@ -232,7 +232,7 @@ def main():
     barom = Barometer(presParams)
     sender = Sender(SERVER_IP, ROOM_DATA)
     receiver = Receiver(SERVER_IP, DIRECTIVES)
-    room = Room(therm, humSensor, barom, receiver, sender, temperature_delta=0.0003, humidity_delta=0.0003)
+    room = Room(therm, humSensor, barom, receiver, sender, temperature_delta=0.0001, humidity_delta=0.0001)
     Thread(target=lambda: room.listening()).start()
     Thread(target=lambda: room.sending(delay=Room.SECONDS_15)).start()
     room.start()

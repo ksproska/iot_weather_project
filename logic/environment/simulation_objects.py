@@ -53,7 +53,7 @@ class TemperatureParams:
 
     def current_temperature(self, time: float, day: int, month: int):
         fluctuation = random.random() * self.temp_fluctuation
-        sign = random.randint(0, 3) - 1
+        sign = random.randint(-1, 1)
         temp_min = self.min_temp(day, month)
         temp_max = self.max_temp(day, month)
         return (temp_max - temp_min) * self.__norm_sin(math.pi * (time - 9) / 12) + temp_min + (sign * fluctuation)
@@ -105,7 +105,7 @@ class HumidityParams:
         temp = self.temp_parameters.current_temperature(time, day, month)
         temp_amplitude = self.temp_parameters.month_amplitudes[month]
         percentage = max(0, (temp - self.temp_parameters.min_temp(day, month))) / temp_amplitude
-        sign = random.randint(0, 3) - 1
+        sign = random.randint(-1, 1)
         fluctuation = random.random() * self.humidity_fluctuation
         #read = 1 - (self.max_humidity - self.min_humidity) * percentage + sign * fluctuation
         read = (percentage + random.uniform(self.min_humidity, self.max_humidity)) / 2 + sign * fluctuation
@@ -125,11 +125,11 @@ class PressureParams:
         middle = (self.max_pressure + self.min_pressure) / 2
 
         if middle - 10 < self.pressure_now < middle + 10:
-            sign = random.choice([0, 0, 0, 0, 0, 0, 0, 1, -1])
+            sign = random.choice([0, 0, 0, 1, -1])
         elif self.pressure_now - 10 < middle:
-            sign = random.randint(0, 4) - 1
+            sign = random.randint(-1, 2)
         else:
-            sign = random.randint(-1, 3) - 1
+            sign = random.randint(-2, 1)
         new_pressure = max(min(self.pressure_now + sign * change, self.max_pressure), self.min_pressure)
         self.pressure_now = new_pressure
         return int(new_pressure)
