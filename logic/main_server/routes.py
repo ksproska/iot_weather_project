@@ -110,7 +110,7 @@ def delete_temp_schedule(room_identifier):
     time_start = datetime.strptime(request.json['time_start'], "%H:%M").time()
     time_end = datetime.strptime(request.json['time_end'], "%H:%M").time()
     #value = float(request.json['value'])
-    all_temp_schedules = db_connection.get_all_default_preferences_temperature(room_identifier)
+    all_temp_schedules = db_connection.get_all_scheduled_preferences_temperature(room_identifier)
     for temp_schedule in all_temp_schedules:
         if temp_schedule.time_start.hour == time_start.hour and temp_schedule.time_end.minute == time_end.minute:
             db_connection.delete_preference(temp_schedule)

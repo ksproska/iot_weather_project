@@ -36,14 +36,14 @@ function TempAims({ roomId, defTemp, tempPrefs, setDefTemp, setTempPrefs }) {
 
     const handleRemovePref = (start, end, val) => {
         fetchDeleteTempSchedule(roomId, start, end, val).then(res => {
-            setTempPrefs(res);
+            setTempPrefs(res['temp_prefs']);
         }).catch(err => console.error(err));
     };
 
     const handleAddForm = () => {
         if (isAddShown) {
             fetchAddTempSchedule(roomId, startTime, endTime, tempAim).then(res => {
-                setTempPrefs(res);
+                setTempPrefs(res['temp_prefs']);
             }).catch(err => console.error(err));
             setIsAddShown(false);
         } else {
