@@ -43,6 +43,7 @@ function HumidityAims({ roomId, defHum, humPrefs, setDefHum, setHumPrefs }) {
     const handleAddForm = () => {
         if (isAddShown) {
             fetchAddHumSchedule(roomId, startTime, endTime, humAim).then(res => {
+                console.log(res);
                 setHumPrefs(res);
             }).catch(err => console.error(err));
             setIsAddShown(false);
