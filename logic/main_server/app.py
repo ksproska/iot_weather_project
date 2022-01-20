@@ -1,7 +1,7 @@
 import sys
 
 sys.path.append('/home/pi/Desktop/proj/iot_weather_project')
-from database.tables_as_classes import Preference_temperature, Record
+from database.tables_as_classes import Preference_humidity, Preference_temperature, Record
 from flask import Flask
 from routes import routes, sender_api, receiver_api
 from database.connect import Connection
@@ -11,6 +11,7 @@ app = Flask(__name__)
 app.register_blueprint(routes)
 
 sender_api.connect_to_broker()
+
 
 def process_message(client, userdata, message):
     # Split message to get required information about room, temp and humidity
@@ -37,10 +38,14 @@ def process_message(client, userdata, message):
         # If humidity is too high, send message that dryer should be on
 
         sender_api.publish(f"{room_id}#{is_thermostat_on}#{is_dryer_on}")
-    elif len(message_decoded) == 2:
+    elif len(message_decoded) == 3:
         room_id = message_decoded[0]
-        temp_in_room = float(message_decoded[1])
-        connection.add_object(Preference_temperature.as_temporary(temp_in_room,room_id))
+        op_code = message_decoded[1]
+        value = float(message_decoded[2])
+        if op_code == "THERM":
+            connection.add_object(Preference_temperature.as_temporary(value,room_id))
+        elif op_code == "DRY":
+            connection.add_object(Preference_humidity.as_temporary(value,room_id))
     connection.close()
     pass
 

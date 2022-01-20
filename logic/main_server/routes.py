@@ -42,7 +42,7 @@ def get_data_for_room(room_identifier):
     # Get data from database
     db_connection = Connection()
     list_of_records = db_connection.get_all_records(room_identifier, False)
-    records_by_minute = db_connection.get_records_grouped_by_minute(room_identifier)
+    records_by_minute = db_connection.get_records_grouped_by_hour(room_identifier)
     records_by_day = db_connection.get_records_grouped_by_day(room_identifier)
 
     dict_to_json = {"day":[], "week":[], "month":[]}
