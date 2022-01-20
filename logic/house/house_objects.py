@@ -64,7 +64,7 @@ class Room:
         self.__OFF_COLOR = '#cc0000'
         self.tk = tk.Tk()
         self.tk.title(f'Room: {self.name}')
-        self.tk.geometry('501x122')
+        self.tk.geometry('600x122')
         self.temperature_text = tk.StringVar(self.tk, f'Temperature: {round(self.current_temperature)}°C')
         self.temperature_setup_text = tk.StringVar(self.tk, f'{round(self.current_temperature)}')
         self.humidity_text = tk.StringVar(self.tk, f'Humidity: {round(self.current_humidity * 100)}%')
