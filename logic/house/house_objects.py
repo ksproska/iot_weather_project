@@ -63,23 +63,28 @@ class Room:
         self.__ON_COLOR = '#009900'
         self.__OFF_COLOR = '#cc0000'
         self.tk = tk.Tk()
-        self.tk.geometry('300x133')
+        self.tk.title(f'Room: {self.name}')
+        self.tk.geometry('501x122')
         self.temperature_text = tk.StringVar(self.tk, f'Temperature: {round(self.current_temperature)}°C')
+        self.temperature_setup_text = tk.StringVar(self.tk, f'{round(self.current_temperature)}')
         self.humidity_text = tk.StringVar(self.tk, f'Humidity: {round(self.current_humidity * 100)}%')
         self.pressure_text = tk.StringVar(self.tk, f'Pressure: {round(self.current_pressure)} hPa')
         self.thermostat_state = tk.BooleanVar(self.tk, self.is_thermostat_on)
         self.dryer_state = tk.BooleanVar(self.tk, self.is_dryer_on)
-        self.thermostat_state_button_text = tk.StringVar(self.tk, 'ON' if self.is_thermostat_on else 'OFF')
-        self.dryer_state_button_text = tk.StringVar(self.tk, 'ON' if self.is_dryer_on else 'OFF')
 
     def __prepare_window_labels(self):
         self.name_label = tk.Label(self.tk, text=self.name, font=self.__FONT, anchor='w', fg=self.__FG_COLOR,
                                    bg=self.__BG_COLOR)
-        self.name_label.grid(row=0, column=0, columnspan=3, sticky='NEWS')
+        self.name_label.grid(row=0, column=0, columnspan=6, sticky='NEWS')
 
         self.temperature_label = tk.Label(self.tk, textvariable=self.temperature_text, font=self.__FONT,
                                           anchor='w', fg=self.__FG_COLOR, bg=self.__BG_COLOR)
         self.temperature_label.grid(row=1, column=0, sticky='NEWS')
+
+        self.temperature_setup_label = tk.Label(self.tk, textvariable=self.temperature_setup_text, font=self.__FONT,
+                                                anchor='center', fg=self.__FG_COLOR, bg=self.__BG_COLOR,
+                                                width='5')
+        self.temperature_setup_label.grid(row=1, column=3, sticky='NEWS')
 
         self.humidity_label = tk.Label(self.tk, textvariable=self.humidity_text, font=self.__FONT, anchor='w',
                                        fg=self.__FG_COLOR, bg=self.__BG_COLOR)
@@ -91,62 +96,49 @@ class Room:
 
         self.is_thermostat_on_label = tk.Label(self.tk, width='10',
                                                bg=self.__ON_COLOR if self.is_thermostat_on else self.__OFF_COLOR)
-        self.is_thermostat_on_label.grid(row=1, column=2, sticky='NEWS')
+        self.is_thermostat_on_label.grid(row=1, column=1, sticky='NEWS')
 
         self.is_dryer_on_label = tk.Label(self.tk, width='10',
                                           bg=self.__ON_COLOR if self.is_dryer_on else self.__OFF_COLOR)
-        self.is_dryer_on_label.grid(row=2, column=2, sticky='NEWS')
+        self.is_dryer_on_label.grid(row=2, column=1, sticky='NEWS')
 
-        self.empty_label = tk.Label(self.tk, width='10', bg=self.__BG_COLOR)
-        self.empty_label.grid(row=3, column=1, columnspan=2, sticky='NEWS')
+        self.empty_humidity_label = tk.Label(self.tk, width='10', bg=self.__BG_COLOR)
+        self.empty_humidity_label.grid(row=2, column=2, columnspan=4, sticky='NEWS')
+        self.empty_pressure_label = tk.Label(self.tk, width='10', bg=self.__BG_COLOR)
+        self.empty_pressure_label.grid(row=3, column=1, columnspan=5, sticky='NEWS')
 
     def __prepare_window_buttons(self):
-        self.thermostat_button = tk.Button(self.tk, bg=self.__BG_COLOR, fg=self.__FG_COLOR, anchor='center', width='5',
-                                           command=lambda: self.__inform_about_thermostat(),
-                                           font=self.__FONT, textvariable=self.thermostat_state_button_text)
-        self.thermostat_button.grid(row=1, column=1, sticky='NEWS')
+        self.thermostat_set_button = tk.Button(self.tk, bg=self.__BG_COLOR, fg=self.__FG_COLOR, anchor='center',
+                                               width='5', command=lambda: self.send_user_preferred_temperature(),
+                                               font=self.__FONT, text='SET')
+        self.thermostat_set_button.grid(row=1, column=5, sticky='NEWS')
+        self.increase_temperature_button = tk.Button(self.tk, width='5', font=self.__FONT, text='+',
+                                                     command=lambda: self.__increase_displayed_temperature(),
+                                                     fg=self.__FG_COLOR, bg=self.__BG_COLOR)
+        self.increase_temperature_button.grid(row=1, column=4, sticky='NEWS')
+        self.decrease_temperature_button = tk.Button(self.tk, width='5', font=self.__FONT, text='-',
+                                                     command=lambda: self.__decrease_displayed_temperature(),
+                                                     fg=self.__FG_COLOR, bg=self.__BG_COLOR)
+        self.decrease_temperature_button.grid(row=1, column=2, sticky='NEWS')
 
-        self.dryer_button = tk.Button(self.tk, bg=self.__BG_COLOR, fg=self.__FG_COLOR, anchor='center', width='5',
-                                           command=lambda: self.__inform_about_dryer(),
-                                           font=self.__FONT, textvariable=self.dryer_state_button_text)
-        self.dryer_button.grid(row=2, column=1, sticky='NEWS')
+    def __increase_displayed_temperature(self):
+        now = int(self.temperature_setup_text.get())
+        if now < 40:
+            self.temperature_setup_text.set(f'{now+1}')
 
-    def __inform_about_thermostat(self):
-        current_state = self.is_thermostat_on
-        if current_state:
-            self.thermostat_state_button_text.set('OFF')
-            self.is_thermostat_on = False
-            self.is_thermostat_on_label.config(bg=self.__OFF_COLOR)
-        else:
-            self.thermostat_state_button_text.set('ON')
-            self.is_thermostat_on = True
-            self.is_thermostat_on_label.config(bg=self.__ON_COLOR)
-        self.send_user_preferred_thermostat()
+    def __decrease_displayed_temperature(self):
+        now = int(self.temperature_setup_text.get())
+        if now > 1:
+            self.temperature_setup_text.set(f'{now - 1}')
 
-    def __inform_about_dryer(self):
-        current_state = self.is_dryer_on
-        if current_state:
-            self.dryer_state_button_text.set('OFF')
-            self.is_dryer_on = False
-            self.is_dryer_on_label.config(bg=self.__OFF_COLOR)
-        else:
-            self.dryer_state_button_text.set('ON')
-            self.is_dryer_on = True
-            self.is_dryer_on_label.config(bg=self.__ON_COLOR)
-        self.send_user_preferred_dryer()
-
-    def __update_buttons_status(self):
+    def __update_diodes_status(self):
         if self.is_thermostat_on:
-            self.thermostat_state_button_text.set('ON')
             self.is_thermostat_on_label.config(bg=self.__ON_COLOR)
         else:
-            self.thermostat_state_button_text.set('OFF')
             self.is_thermostat_on_label.config(bg=self.__OFF_COLOR)
         if self.is_dryer_on:
-            self.dryer_state_button_text.set('ON')
             self.is_dryer_on_label.config(bg=self.__ON_COLOR)
         else:
-            self.dryer_state_button_text.set('OFF')
             self.is_dryer_on_label.config(bg=self.__OFF_COLOR)
 
     def __update_labels_status(self):
@@ -157,7 +149,6 @@ class Room:
     def __update_temperature(self):
         time, day, month = time_now()
         temp = self.thermometer.current_temperature(time, day, month)
-        temp_change = 0.0
 
         if self.is_thermostat_on:
             temp_change = (self.temperature_delta * random.random())
@@ -183,6 +174,7 @@ class Room:
         self.__update_humidity()
         self.__update_temperature()
         self.__update_labels_status()
+        self.__update_diodes_status()
         self.tk.after(5, lambda: self.update_all_parameters())
 
     def update_devices(self, message):
@@ -190,7 +182,7 @@ class Room:
         if name.upper() == self.name.upper():
             self.is_dryer_on = is_dryer_on
             self.is_thermostat_on = is_thermostat_on
-            self.__update_buttons_status()
+            self.__update_diodes_status()
             # print(f'device updated:\nThermostat on: {self.is_thermostat_on}\nDryer on: {self.is_dryer_on}\n')
 
     def __decode_message(self, message: str):
@@ -222,16 +214,11 @@ class Room:
         pres = self.barometer.current_pressure(time, day, month)
         self.current_pressure = pres
         self.sender.publish(f"{self.name}#{temp}#{hum}#{pres}")
-        print(f'{self.name}\n{temp}C\n{hum * 100}%\n{pres}hPa')
 
-    def send_user_preferred_thermostat(self):
-        pass  # self.sender.publish(f'{self.name}#THERM#{"ON" if self.is_thermostat_on else "OFF"}')
-
-    def send_user_preferred_dryer(self):
-        pass  # self.sender.publish(f'{self.name}#DRY#{"ON" if self.is_dryer_on else "OFF"}')
+    def send_user_preferred_temperature(self):
+        self.sender.publish(f'{self.name}#THERM#{self.temperature_setup_text.get()}')
 
     def start(self):
-        # Thread(target=lambda: self.update_all_parameters())
         self.update_all_parameters()
         self.tk.mainloop()
 
@@ -245,7 +232,7 @@ def main():
     barom = Barometer(presParams)
     sender = Sender(SERVER_IP, ROOM_DATA)
     receiver = Receiver(SERVER_IP, DIRECTIVES)
-    room = Room(therm, humSensor, barom, receiver, sender, temperature_delta=0.0001, humidity_delta=0.00001)
+    room = Room(therm, humSensor, barom, receiver, sender, temperature_delta=0.0003, humidity_delta=0.0003)
     # Thread(target=lambda: room.listening()).start()
     # Thread(target=lambda: room.sending(delay=Room.SECONDS_15)).start()
     room.start()
