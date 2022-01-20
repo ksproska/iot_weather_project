@@ -151,11 +151,11 @@ class Room:
         temp = self.thermometer.current_temperature(time, day, month)
 
         if self.is_thermostat_on:
-            temp_change = (self.temperature_delta * random.random())
+            temp_change = self.temperature_delta # (self.temperature_delta * random.random())
         elif self.current_temperature < temp:
-            temp_change = (self.temperature_delta * random.random())
+            temp_change = self.temperature_delta # (self.temperature_delta * random.random())
         else:
-            temp_change = -1 * (self.temperature_delta * random.random())
+            temp_change = -1 * self.temperature_delta # (self.temperature_delta * random.random())
 
         self.current_temperature = min(self.current_temperature + temp_change, 40)
 
