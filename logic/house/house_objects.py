@@ -36,7 +36,7 @@ class Room:
         self.is_thermostat_on = False
         self.is_dryer_on = False
         self.current_temperature = 20  # thermometer.current_temperature(*time_now())
-        self.current_humidity = 0.3  # humidity_sensor.current_humidity(*time_now())
+        self.current_humidity = 0.35  # humidity_sensor.current_humidity(*time_now())
         self.current_pressure = barometer.current_pressure(0, 0, 0)
         self.receiver = receiver
         self.sender = sender
@@ -233,8 +233,8 @@ def main():
     sender = Sender(SERVER_IP, ROOM_DATA)
     receiver = Receiver(SERVER_IP, DIRECTIVES)
     room = Room(therm, humSensor, barom, receiver, sender, temperature_delta=0.0003, humidity_delta=0.0003)
-    # Thread(target=lambda: room.listening()).start()
-    # Thread(target=lambda: room.sending(delay=Room.SECONDS_15)).start()
+    Thread(target=lambda: room.listening()).start()
+    Thread(target=lambda: room.sending(delay=Room.SECONDS_15)).start()
     room.start()
 
 
