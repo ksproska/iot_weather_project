@@ -1,4 +1,5 @@
 from crypt import methods
+from email.policy import default
 from database.connect import Connection
 from flask import Blueprint, jsonify, current_app, request
 from communication import receiver, sender, constants
@@ -176,4 +177,7 @@ def add_hum_schedule(room_identifier):
     db_connection.close()
     return jsonify(dict_to_json), 200
 
-
+@routes.route('/', defaults={'path':''})
+@routes.route('/<path:path>')
+def delault_route(path):
+    return current_app.send_static_file('index.html')
