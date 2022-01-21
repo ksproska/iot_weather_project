@@ -72,7 +72,11 @@ class Preference(AddableToDatabase):
         if type(self.preference_timestamp) is str:
             self.preference_timestamp = datetime.strptime(preference_timestamp, '%Y-%m-%d %H:%M:%S.%f')
         self.time_start = time_start
+        if type(self.time_start) is str:
+            self.time_start = datetime.strptime(time_start, '%H:%M:%S').time()
         self.time_end = time_end
+        if type(self.time_end) is str:
+            self.time_end = datetime.strptime(time_end, '%H:%M:%S').time()
 
     @classmethod
     def as_default(cls, value, room_name):

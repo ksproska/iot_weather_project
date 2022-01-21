@@ -110,6 +110,7 @@ class DBTest:
 
 if __name__ == '__main__':
     DBTest.example_setup()
+    DBTest.adding_preference_temperature_temp()
     DBTest.display_preferences()
     DBTest.display_records()
     DBTest.delete_examples()

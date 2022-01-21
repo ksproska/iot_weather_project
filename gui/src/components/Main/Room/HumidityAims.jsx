@@ -36,14 +36,14 @@ function HumidityAims({ roomId, defHum, humPrefs, setDefHum, setHumPrefs }) {
 
     const handleRemovePref = (start, end, val) => {
         fetchDeleteHumSchedule(roomId, start, end, val).then(res => {
-            setHumPrefs(res);
+            setHumPrefs(res['hum_prefs']);
         }).catch(err => console.error(err));
     };
 
     const handleAddForm = () => {
         if (isAddShown) {
             fetchAddHumSchedule(roomId, startTime, endTime, humAim).then(res => {
-                setHumPrefs(res);
+                setHumPrefs(res['hum_prefs']);
             }).catch(err => console.error(err));
             setIsAddShown(false);
         } else {

@@ -36,7 +36,15 @@ function Chart({ roomName, isTempHidden, isHumHidden, isPressHidden, isThermoSho
     const dryers = [];
 
     if (Array.isArray(records)) {
-        records.forEach(record => times.push(`${('0' + record['hour']).slice(-2)}:${('0' + record['minute']).slice(-2)}`));
+        if (timeRange === "day") {
+            records.forEach((record, index) => index % 15 === 0 ?
+                times.push(`${('0' + record['hour']).slice(-2)}:${('0' + record['minute']).slice(-2)}`) : '');
+        } else if (timeRange === "week") {
+            records.forEach((record, index) => index % 6 === 0 ?
+                times.push(`${('0' + record['hour']).slice(-2)}:00`) : '');
+        } else {
+            records.forEach(record => times.push(`${('0' + record['day']).slice(-2)}.${('0' + record['month']).slice(-2)}`));
+        }
         records.forEach(record => temps.push(record['temperature']));
         records.forEach(record => humids.push(record['humidity']));
         records.forEach(record => pressures.push(record['pressure']));
@@ -113,7 +121,17 @@ function Chart({ roomName, isTempHidden, isHumHidden, isPressHidden, isThermoSho
                 title: {
                     display: true,
                     text: 'Time'
-                }
+                }//, ticks: {
+                //     callback: function (val, index) {
+                //         let returnVal = 0;
+                //         if (timeRange === "week") {
+                //             returnVal = index % 6 === 0 ? this.getLabelForValue(val) : '';
+                //         } else {
+                //             returnVal = this.getLabelForValue(val);
+                //         }
+                //         return returnVal;
+                //     }
+                // }
             },
             y: {
                 type: 'linear',
