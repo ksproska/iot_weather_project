@@ -7,6 +7,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
 import Chart from "./Chart";
@@ -23,6 +24,8 @@ function ChartContainer({ roomName, data }) {
     const [isDryerShown, setIsDryerShown] = useState(false);
 
     const [timeRange, setTimeRange] = useState("day");
+
+    const [daySpread, setDaySpread] = useState(0);
 
     const buttonDayClass = styles.chart_button + " " + (timeRange === "day" ? styles.chart_button_selected : styles.chart_button_dimmed);
     const buttonWeekClass = styles.chart_button + " " + (timeRange === "week" ? styles.chart_button_selected : styles.chart_button_dimmed);
@@ -87,7 +90,7 @@ function ChartContainer({ roomName, data }) {
             </Grid>
             <Grid item xs={8} className={styles.chart_container}>
                 <Chart roomName={roomName} isTempHidden={isTempHidden} isHumHidden={isHumHidden} isPressHidden={isPressHidden}
-                    isThermoShown={isThermoShown} isDryerShown={isDryerShown} roomData={data} timeRange={timeRange} />
+                    isThermoShown={isThermoShown} isDryerShown={isDryerShown} roomData={data} timeRange={timeRange} daySpread={daySpread} />
             </Grid>
             <Grid item xs={2} className={styles.chart_checkboxes_column}>
                 <Stack>
@@ -105,6 +108,9 @@ function ChartContainer({ roomName, data }) {
                     <FormGroup>
                         <FormControlLabel control={<Checkbox onClick={switchThermo} />} label="Thermostat" />
                         <FormControlLabel control={<Checkbox onClick={switchDryer} />} label="Dryer" />
+                    </FormGroup>
+                    <FormGroup>
+                        <TextField type="number" value={daySpread} onChange={(event) => setDaySpread(event.current.value)} />
                     </FormGroup>
                 </Stack>
             </Grid>
