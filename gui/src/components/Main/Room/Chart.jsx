@@ -38,10 +38,10 @@ function Chart({ roomName, isTempHidden, isHumHidden, isPressHidden, isThermoSho
     if (Array.isArray(records)) {
         if (timeRange === "day") {
             records.forEach((record, index) => index % 15 === 0 ?
-                times.push(`${('0' + record['hour']).slice(-2)}:${('0' + record['minute']).slice(-2)}`) : '');
+                times.push(`${('0' + record['hour']).slice(-2)}:${('0' + record['minute']).slice(-2)}`) : " ");
         } else if (timeRange === "week") {
             records.forEach((record, index) => index % 6 === 0 ?
-                times.push(`${('0' + record['hour']).slice(-2)}:00`) : '');
+                times.push(`${('0' + record['hour']).slice(-2)}:00`) : " ");
         } else {
             records.forEach(record => times.push(`${('0' + record['day']).slice(-2)}.${('0' + record['month']).slice(-2)}`));
         }
