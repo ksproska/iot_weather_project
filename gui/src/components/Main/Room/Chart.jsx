@@ -39,17 +39,37 @@ function Chart({ roomName, isTempHidden, isHumHidden, isPressHidden, isThermoSho
         if (timeRange === "day") {
             records.forEach((record, index) => index % 15 === 0 ?
                 times.push(`${('0' + record['hour']).slice(-2)}:${('0' + record['minute']).slice(-2)}`) : times.push(''));
+
+            records.forEach((record, index) => {
+                if (index % 15 == 0) {
+                    temps.push(record['temperature']);
+                    humids.push(record['humidity']);
+                    pressures.push(record['pressure']);
+                    thermostats.push(record['thermostat_state']);
+                    dryers.push(record['dryer_state']);
+                }
+            });
         } else if (timeRange === "week") {
             records.forEach((record, index) => index % 6 === 0 ?
                 times.push(`${('0' + record['hour']).slice(-2)}:00`) : times.push(''));
+
+            records.forEach((record, index) => {
+                if (index % 6 == 0) {
+                    temps.push(record['temperature']);
+                    humids.push(record['humidity']);
+                    pressures.push(record['pressure']);
+                    thermostats.push(record['thermostat_state']);
+                    dryers.push(record['dryer_state']);
+                }
+            });
         } else {
             records.forEach(record => times.push(`${('0' + record['day']).slice(-2)}.${('0' + record['month']).slice(-2)}`));
+            records.forEach(record => temps.push(record['temperature']));
+            records.forEach(record => humids.push(record['humidity']));
+            records.forEach(record => pressures.push(record['pressure']));
+            records.forEach(record => thermostats.push(record['thermostat_state']));
+            records.forEach(record => dryers.push(record['dryer_state']));
         }
-        records.forEach(record => temps.push(record['temperature']));
-        records.forEach(record => humids.push(record['humidity']));
-        records.forEach(record => pressures.push(record['pressure']));
-        records.forEach(record => thermostats.push(record['thermostat_state']));
-        records.forEach(record => dryers.push(record['dryer_state']));
     }
 
     const data = {
